@@ -1,0 +1,50 @@
+/*
+  Shared card surface. Every card in the app (trip cards, expense cards,
+  dashboard cards, the closure/settlement panels) is a --color-paper-raised
+  rectangle with the same border, radius, shadow, and padding - this class
+  is that recipe defined once. Component-specific CSS files add their own
+  layout (flex direction, gaps) and content styling on top; they should not
+  redefine background/border/radius/shadow/padding themselves.
+
+  Usage: <div className="card dashboard-card"> or
+  <Link className="card card--interactive trip-card">
+*/
+
+.card {
+  background: var(--color-paper-raised);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-4) var(--space-5);
+}
+
+/* For cards that are also links/buttons (trip cards, expense cards): a
+   quiet lift on hover, no scale, no shadow-bloom, no color change beyond
+   the border. */
+.card--interactive {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  transition: transform var(--motion-fast), border-color var(--motion-fast);
+}
+
+.card--interactive:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-border-strong);
+}
+
+/* A card surface sitting one level below the page (join codes, inset
+   summaries) instead of above it - sunken paper, no border needed since
+   the color shift alone reads as recessed. */
+.card--sunken {
+  background: var(--color-paper-sunken);
+  box-shadow: none;
+}
+
+/* Large-container variant: reserved for full-width panels that stand
+   alone on a page (the settlement/closure/approval panels below the
+   trip dashboard), never for an ordinary content card - see the
+   border-radius scale note in tokens.css. */
+.card--lg {
+  border-radius: var(--radius-lg);
+}

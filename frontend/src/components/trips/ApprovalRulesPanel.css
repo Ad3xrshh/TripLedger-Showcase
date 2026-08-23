@@ -1,0 +1,63 @@
+/*
+  Surface (background/border/radius-lg/shadow/padding) now comes from the
+  shared .card / .card--lg primitives - see styles/card.css. This rule
+  only sets this panel's page placement.
+*/
+.approval-rules {
+  margin-top: var(--space-6);
+}
+
+.approval-rules__title {
+  font-size: var(--fs-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-3);
+}
+
+.approval-rules__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.approval-rules__rule {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  row-gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-sm);
+}
+
+.approval-rules__rule-range {
+  color: var(--color-text);
+}
+
+.approval-rules__rule-count {
+  background: var(--color-border);
+  color: var(--color-text-muted);
+}
+
+.approval-rules__form {
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+}
+
+.approval-rules__form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.approval-rules__form .inline-error {
+  margin-bottom: var(--space-3);
+}

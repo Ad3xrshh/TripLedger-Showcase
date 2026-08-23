@@ -1,0 +1,122 @@
+@import './tokens.css';
+@import './card.css';
+@import './badge.css';
+@import './skeleton.css';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-paper);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: var(--fs-md);
+  line-height: var(--lh-normal);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-tight);
+  margin: 0;
+  color: var(--color-ink);
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+/* Visible keyboard focus everywhere, including inside custom components -
+   references the same --focus-ring token components can use directly. */
+:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.mono {
+  font-family: var(--font-mono);
+}
+
+/* Small uppercase tracked label - category tags, card section titles,
+   eyebrows above a heading. Color is intentionally left to the caller
+   (amber for an actionable/money tag, muted for a passive section title)
+   since the same shape means different things in different contexts. */
+.eyebrow {
+  display: inline-block;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-snug);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+/* Visually hides content while keeping it available to screen readers -
+   for labels/context that sighted users get from layout alone. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Minimal branded loading state while the stored auth token is being
+   verified - used by RequireAuth for every protected route, and by
+   RootRoute for `/`, which can't show either the app shell or the
+   landing page until it knows which one is correct. */
+.auth-checking {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-paper);
+  color: var(--color-text-muted);
+  font-size: var(--fs-sm);
+}
+

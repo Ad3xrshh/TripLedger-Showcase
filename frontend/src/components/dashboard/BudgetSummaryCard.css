@@ -1,0 +1,103 @@
+.budget-summary__headline {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.budget-summary__headline-label {
+  font-size: var(--fs-sm);
+  color: var(--color-text-muted);
+}
+
+.budget-summary__headline-value {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xl);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.budget-summary__bar-track {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--color-border);
+  overflow: hidden;
+}
+
+.budget-summary__bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 200ms ease;
+}
+
+.budget-summary__bar-fill--green {
+  background: var(--color-positive);
+}
+
+.budget-summary__bar-fill--yellow {
+  background: var(--color-amber);
+}
+
+.budget-summary__bar-fill--red {
+  background: var(--color-negative);
+}
+
+.budget-summary__stats {
+  display: flex;
+  gap: var(--space-6);
+}
+
+.budget-summary__stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.budget-summary__stat-label {
+  font-size: var(--fs-xs);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.budget-summary__stat-value {
+  font-family: var(--font-mono);
+  font-size: var(--fs-md);
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.budget-summary__note {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--color-text-muted);
+}
+
+.budget-summary__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: var(--fs-sm);
+  color: var(--color-text-muted);
+}
+
+.budget-summary__status {
+  font-weight: 600;
+  padding: 2px var(--space-2);
+  border-radius: 999px;
+}
+
+.budget-summary__status--green {
+  background: color-mix(in srgb, var(--color-positive) 15%, transparent);
+  color: var(--color-positive-text);
+}
+
+.budget-summary__status--yellow {
+  background: color-mix(in srgb, var(--color-amber) 20%, transparent);
+  color: #8a6316;
+}
+
+.budget-summary__status--red {
+  background: color-mix(in srgb, var(--color-negative) 15%, transparent);
+  color: var(--color-negative);
+}

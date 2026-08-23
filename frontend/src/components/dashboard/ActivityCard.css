@@ -1,0 +1,18 @@
+.activity-card__item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-left: var(--space-3);
+  border-left: 2px solid var(--color-border);
+}
+
+.activity-card__action {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.activity-card__meta {
+  font-size: var(--fs-xs);
+  color: var(--color-text-muted);
+}

@@ -1,0 +1,169 @@
+/*
+  Surface (background/border/radius/shadow/padding/hover-lift) now comes
+  from the shared .card / .card--interactive primitives - see
+  styles/card.css. This file only sets trip-card-specific layout/content.
+*/
+
+.trip-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.trip-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.trip-card__name {
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-semibold);
+  margin: var(--space-1) 0 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.trip-card__dates {
+  margin-top: var(--space-1);
+  color: var(--color-text-muted);
+  font-size: var(--fs-sm);
+}
+
+/* The card's own ticket-divider sits closer to its content than the
+   full-bleed one under the topbar - a little breathing room either
+   side rather than touching the title/budget block directly. */
+.trip-card .ticket-divider {
+  margin: var(--space-4) 0;
+}
+
+.trip-card__budget {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.trip-card__budget-label {
+  color: var(--color-text-muted);
+}
+
+.trip-card__budget-amount {
+  font-family: var(--font-mono);
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-semibold);
+  color: var(--color-text);
+  line-height: var(--lh-tight);
+}
+
+.trip-card__budget-caption {
+  font-size: var(--fs-xs);
+  color: var(--color-text-muted);
+}
+
+/* Wraps the (still fully clickable) card + its delete confirmation
+   dialog - the dialog itself portals to document.body via ConfirmDialog,
+   so this wrapper only exists to keep the delete button positioned
+   relative to the card without disturbing .trip-card's own layout
+   rules above (display:flex etc, still targeted directly by trip.card). */
+.trip-card-wrapper {
+  position: relative;
+}
+
+.trip-card__delete {
+  position: absolute;
+  top: var(--space-3);
+  left: var(--space-3);
+  z-index: 1;
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: var(--fs-xs);
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 2px 0;
+  transition: color var(--motion-fast);
+}
+
+.trip-card__delete:hover {
+  color: var(--color-negative);
+}
+
+.trip-card__footer {
+  margin-top: var(--space-4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.trip-card__owner-tag {
+  font-size: var(--fs-xs);
+  color: var(--color-amber-text);
+  font-weight: var(--fw-semibold);
+}
+
+.trip-card__role-tag {
+  font-size: var(--fs-xs);
+  color: var(--color-text-muted);
+  font-weight: var(--fw-medium);
+}
+
+.trip-card__arrow {
+  color: var(--color-text-muted);
+  transition: transform var(--motion-fast), color var(--motion-fast);
+}
+
+.trip-card:hover .trip-card__arrow,
+.trip-card:focus-visible .trip-card__arrow {
+  color: var(--color-ink);
+  transform: translateX(3px);
+}
+
+/* Restrained entrance for the first screenful of cards - capped at 8 so
+   a long list doesn't turn into a slow cascade, and content is never
+   delayed: opacity starts at 0 but the card is already laid out, so
+   nothing shifts the page. prefers-reduced-motion is handled by the
+   global rule in global.css (near-zero animation-duration for
+   everything), no separate override needed here. */
+.trip-card {
+  animation: trip-card-in 220ms ease-out both;
+}
+
+.trip-card:nth-child(n + 9) {
+  animation: none;
+}
+
+.trip-card:nth-child(1) {
+  animation-delay: 0ms;
+}
+.trip-card:nth-child(2) {
+  animation-delay: 30ms;
+}
+.trip-card:nth-child(3) {
+  animation-delay: 60ms;
+}
+.trip-card:nth-child(4) {
+  animation-delay: 90ms;
+}
+.trip-card:nth-child(5) {
+  animation-delay: 120ms;
+}
+.trip-card:nth-child(6) {
+  animation-delay: 150ms;
+}
+.trip-card:nth-child(7) {
+  animation-delay: 180ms;
+}
+.trip-card:nth-child(8) {
+  animation-delay: 210ms;
+}
+
+@keyframes trip-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

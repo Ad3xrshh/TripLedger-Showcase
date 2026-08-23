@@ -1,0 +1,54 @@
+.trip-ledger-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-display);
+  font-weight: var(--fw-bold);
+  letter-spacing: -0.01em;
+}
+
+.trip-ledger-mark__icon {
+  display: block;
+  flex-shrink: 0;
+  width: 22px;
+  height: 20px;
+}
+
+.trip-ledger-mark--lg .trip-ledger-mark__icon {
+  width: 30px;
+  height: 27px;
+}
+
+.trip-ledger-mark__icon--standalone {
+  width: 26px;
+  height: 23px;
+}
+
+.trip-ledger-mark__glyph {
+  fill: var(--color-ink);
+}
+
+.trip-ledger-mark__bar {
+  fill: var(--color-brand-teal);
+}
+
+.trip-ledger-mark__word {
+  display: inline-flex;
+}
+
+.trip-ledger-mark__trip {
+  color: var(--color-ink);
+}
+
+.trip-ledger-mark__ledger {
+  color: var(--color-brand-teal);
+  font-weight: var(--fw-medium);
+}
+
+.trip-ledger-mark--md {
+  font-size: var(--fs-lg);
+}
+
+.trip-ledger-mark--lg {
+  font-size: var(--fs-xl);
+}

@@ -1,0 +1,91 @@
+/*
+  Two contexts, same as EmptyState.css:
+  - Page-level (default): a quiet solid-border block with generous
+    padding, centered - used where the page's primary data failed to
+    load (My Trips, Trip detail, Expenses, Expense detail, Members).
+    Solid (not dashed) deliberately distinguishes "this failed" from
+    EmptyState's dashed "nothing here yet" - the two must never look the
+    same from a glance.
+  - Compact (nested in a card/section that already has its own title and
+    padding, e.g. Settlement, Trip closure, Approval rules, Expense
+    verification, Notifications, Activity): no border/padding of its
+    own, left-aligned.
+
+  Red is used as a signal, not as the surface: the eyebrow is the only
+  colored element, everything else stays on the same ink/paper palette
+  as the rest of the app.
+*/
+
+.error-state {
+  border: var(--border-width) solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.error-state__eyebrow {
+  color: var(--color-negative);
+  margin: 0;
+}
+
+.error-state__title {
+  font-family: var(--font-display);
+  font-weight: var(--fw-semibold);
+  font-size: var(--fs-md);
+  color: var(--color-text);
+  margin: 0;
+}
+
+.error-state__description {
+  color: var(--color-text-muted);
+  font-size: var(--fs-sm);
+  max-width: 40ch;
+  margin: 0;
+}
+
+.error-state__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+
+.error-state--compact {
+  border: none;
+  padding: 0;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.error-state--compact .error-state__title {
+  font-size: var(--fs-sm);
+}
+
+.error-state--compact .error-state__description {
+  max-width: none;
+}
+
+.error-state--compact .error-state__actions {
+  justify-content: flex-start;
+  margin-top: var(--space-3);
+}
+
+@media (max-width: 480px) {
+  .error-state {
+    padding: var(--space-5);
+  }
+
+  .error-state__actions {
+    flex-direction: column;
+    align-self: stretch;
+  }
+
+  .error-state__actions .btn {
+    text-align: center;
+  }
+}

@@ -1,0 +1,117 @@
+.auth-layout {
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-5);
+}
+
+/* Two-region composition: a sunken brand panel (reusing the same
+   "content that sits below the page" surface as --color-paper-sunken
+   elsewhere - see styles/card.css) beside the actual form, both inside
+   one card--lg shell. Surface (background/border/radius-lg/shadow) comes
+   from the shared .card / .card--lg primitives; only padding is
+   overridden here, same as this class already did before this phase. */
+.auth-layout__panel {
+  width: 100%;
+  max-width: 720px;
+  padding: var(--space-6);
+  display: grid;
+  grid-template-columns: minmax(200px, 260px) 1fr;
+  gap: var(--space-6);
+  align-items: stretch;
+  animation: auth-panel-in 260ms ease-out;
+}
+
+.auth-layout__brand {
+  background: var(--color-paper-sunken);
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-3);
+}
+
+.auth-layout__tagline {
+  color: var(--color-text-muted);
+  font-size: var(--fs-sm);
+}
+
+.auth-layout__points {
+  list-style: none;
+  margin: var(--space-2) 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.auth-layout__points li {
+  position: relative;
+  padding-left: var(--space-4);
+  color: var(--color-text-muted);
+  font-size: var(--fs-xs);
+  line-height: var(--lh-normal);
+}
+
+/* A small ticket-stub tick instead of a plain bullet dot, echoing the
+   perforated-ticket motif used elsewhere without pulling in a second
+   divider component for a job it wasn't designed for. */
+.auth-layout__points li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.5em;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--color-brand-teal);
+}
+
+.auth-layout__form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+}
+
+@media (max-width: 719px) {
+  .auth-layout__panel {
+    grid-template-columns: 1fr;
+    max-width: 420px;
+    gap: var(--space-4);
+  }
+
+  .auth-layout__brand {
+    padding: var(--space-4);
+  }
+
+  /* The form is the priority on small screens - keep the icon/wordmark
+     and tagline for brand context, drop the feature list so the actual
+     task (log in / register) isn't pushed below the fold. */
+  .auth-layout__points {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-layout {
+    padding: var(--space-4);
+  }
+
+  .auth-layout__panel {
+    padding: var(--space-5);
+  }
+}
+
+@keyframes auth-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

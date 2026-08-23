@@ -1,0 +1,100 @@
+/*
+  Surface (background/border/radius/shadow/padding/hover-lift) now comes
+  from the shared .card / .card--interactive primitives - see
+  styles/card.css. This file only sets expense-card-specific layout/content.
+*/
+
+.expense-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.expense-card__description {
+  font-size: var(--fs-md);
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.expense-card__amount {
+  margin-top: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--fs-lg);
+  color: var(--color-text);
+}
+
+.expense-card__meta {
+  margin-top: var(--space-1);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  row-gap: 2px;
+  gap: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--fs-sm);
+}
+
+.expense-card__category {
+  margin-top: var(--space-3);
+  color: var(--color-amber);
+}
+
+.expense-card__arrow {
+  margin-left: auto;
+  color: var(--color-text-muted);
+  transition: transform var(--motion-fast), color var(--motion-fast);
+}
+
+.expense-card:hover .expense-card__arrow,
+.expense-card:focus-visible .expense-card__arrow {
+  color: var(--color-ink);
+  transform: translateX(3px);
+}
+
+/* Same restrained, capped entrance as TripCard.css - see the comment
+   there. */
+.expense-card {
+  animation: expense-card-in 220ms ease-out both;
+}
+
+.expense-card:nth-child(n + 9) {
+  animation: none;
+}
+
+.expense-card:nth-child(1) {
+  animation-delay: 0ms;
+}
+.expense-card:nth-child(2) {
+  animation-delay: 30ms;
+}
+.expense-card:nth-child(3) {
+  animation-delay: 60ms;
+}
+.expense-card:nth-child(4) {
+  animation-delay: 90ms;
+}
+.expense-card:nth-child(5) {
+  animation-delay: 120ms;
+}
+.expense-card:nth-child(6) {
+  animation-delay: 150ms;
+}
+.expense-card:nth-child(7) {
+  animation-delay: 180ms;
+}
+.expense-card:nth-child(8) {
+  animation-delay: 210ms;
+}
+
+@keyframes expense-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

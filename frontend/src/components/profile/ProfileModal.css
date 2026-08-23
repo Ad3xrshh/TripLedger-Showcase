@@ -1,0 +1,142 @@
+/*
+  Same overlay tier as HelpModal/ConfirmDialog (see those files' comments)
+  - none of the three are ever expected to be open at the same time, so
+  sharing z-index:1000 is safe rather than needing a fourth token.
+*/
+
+.profile-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: color-mix(in srgb, var(--color-ink) 45%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  animation: profile-modal-backdrop-in var(--motion-base) ease;
+}
+
+.profile-modal {
+  width: 100%;
+  max-width: 380px;
+  background: var(--color-paper-raised);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-raised);
+  display: flex;
+  flex-direction: column;
+  animation: profile-modal-in var(--motion-base) ease;
+}
+
+.profile-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-5) var(--space-6) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.profile-modal__title {
+  font-family: var(--font-display);
+  font-weight: var(--fw-semibold);
+  font-size: var(--fs-lg);
+  color: var(--color-text);
+  margin: 0;
+}
+
+.profile-modal__close {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color var(--motion-fast), color var(--motion-fast);
+}
+
+.profile-modal__close:hover {
+  background: var(--color-border);
+  color: var(--color-text);
+}
+
+.profile-modal__body {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-5) var(--space-6) var(--space-6);
+}
+
+.profile-modal__avatar {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-brand-teal);
+  color: var(--color-ink);
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-bold);
+}
+
+.profile-modal__fields {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.profile-modal__field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.profile-modal__field-label {
+  color: var(--color-text-muted);
+}
+
+.profile-modal__field-value {
+  font-size: var(--fs-md);
+  color: var(--color-text);
+  overflow-wrap: anywhere;
+}
+
+@keyframes profile-modal-backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes profile-modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-modal__header {
+    padding: var(--space-4) var(--space-5);
+  }
+
+  .profile-modal__body {
+    padding: var(--space-4) var(--space-5) var(--space-5);
+  }
+}

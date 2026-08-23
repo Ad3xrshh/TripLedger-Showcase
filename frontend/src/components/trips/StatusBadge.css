@@ -1,0 +1,53 @@
+/*
+  Pill chrome (display/padding/radius/size/weight/tracking) now lives in
+  the shared .badge class - see styles/badge.css. This file only sets the
+  per-status color plus a small decorative dot. The dot is purely
+  reinforcing - the label text ("Active"/"Closing"/"Closed") is always
+  present and is what actually communicates the status, so hiding the
+  dot from assistive tech (it's a ::before, never read) doesn't remove
+  any meaning.
+*/
+
+.status-badge {
+  gap: 5px;
+}
+
+.status-badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+.status-badge--active {
+  background: var(--color-positive-soft);
+  color: var(--color-positive-text);
+}
+
+/* "Closing" is a caution/attention state, not an action/money moment, so
+   it uses --color-warning rather than amber (amber is reserved for
+   actions and money - see tokens.css). */
+.status-badge--closing {
+  background: var(--color-warning-soft);
+  color: var(--color-warning);
+}
+
+.status-badge--closed {
+  background: var(--color-border);
+  color: var(--color-text-muted);
+}
+
+.status-badge--closed::before {
+  /* A dot reads as "in progress" - closed is finished, so this shows a
+     small checkmark instead via a two-segment currentColor border,
+     keeping the same reinforcing (non-load-bearing) role as the dot. */
+  width: 6px;
+  height: 3px;
+  border-radius: 0;
+  background: none;
+  border-left: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(-45deg) translate(0, -1px);
+}

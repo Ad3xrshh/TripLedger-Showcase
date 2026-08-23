@@ -1,0 +1,283 @@
+/*
+  Surface (background/border/radius-lg/shadow/padding) now comes from the
+  shared .card / .card--lg primitives - see styles/card.css. This rule
+  only sets this panel's page placement.
+*/
+.settlement-panel {
+  margin-top: var(--space-6);
+}
+
+.settlement-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.settlement-panel__title {
+  font-size: var(--fs-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.settlement-panel__badge {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+}
+
+.settlement-panel__badge--preview {
+  background: var(--color-amber-soft);
+  color: var(--color-ink);
+}
+
+.settlement-panel__badge--final {
+  background: var(--color-positive);
+  color: var(--color-paper-raised);
+}
+
+.settlement-panel__summary {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+/* The current member's own position, pulled out of the balances list
+   below and given the strongest visual weight on the panel - the single
+   most important number on this screen (see the phase's "PERSONAL
+   BALANCE" requirement). Status/amount are the exact same values
+   SettlementBalances renders for this member's row; nothing is
+   recalculated here. */
+.settlement-panel__my-balance {
+  text-align: center;
+  padding: var(--space-4) 0;
+}
+
+.settlement-panel__my-balance-label {
+  display: block;
+}
+
+.settlement-panel__my-balance-value {
+  display: block;
+  margin-top: var(--space-1);
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xl);
+  font-weight: var(--fw-bold);
+}
+
+.settlement-panel__my-balance--owes .settlement-panel__my-balance-value {
+  color: var(--color-negative);
+}
+
+.settlement-panel__my-balance--receives .settlement-panel__my-balance-value {
+  color: var(--color-positive-text);
+}
+
+.settlement-panel__my-balance--settled .settlement-panel__my-balance-value {
+  color: var(--color-text-muted);
+}
+
+.settlement-panel .ticket-divider {
+  margin-bottom: var(--space-4);
+}
+
+.settlement-panel__summary-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-paper);
+}
+
+.settlement-panel__summary-value {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xl);
+  color: var(--color-text);
+}
+
+.settlement-panel__summary-label {
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.settlement-panel__section {
+  margin-bottom: var(--space-5);
+}
+
+.settlement-panel__section-title {
+  font-size: var(--fs-sm);
+  color: var(--color-text);
+  margin: 0 0 var(--space-3);
+}
+
+.settlement-panel__hint {
+  color: var(--color-text-muted);
+  font-size: var(--fs-sm);
+  margin: 0 0 var(--space-3);
+}
+
+.settlement-panel__finalize {
+  border-top: 1px solid var(--color-border);
+  padding-top: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+/* --- Balances list --- */
+
+.settlement-balances {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.settlement-balances__row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-sm);
+}
+
+.settlement-balances__name {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-text);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.settlement-balances__you-tag {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-ink);
+  background: var(--color-amber-soft);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-sm);
+}
+
+.settlement-balances__status {
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-text-muted);
+}
+
+.settlement-balances__amount {
+  font-family: var(--font-mono);
+  color: var(--color-text);
+}
+
+.settlement-balances__row--receives .settlement-balances__amount {
+  color: var(--color-positive-text);
+}
+
+.settlement-balances__row--owes .settlement-balances__amount {
+  color: var(--color-negative);
+}
+
+/* --- Transactions list --- */
+
+.settlement-transactions {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.settlement-transactions__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-sm);
+  flex-wrap: wrap;
+}
+
+.settlement-transactions__parties {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-text);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.settlement-transactions__from,
+.settlement-transactions__to {
+  font-weight: 600;
+}
+
+.settlement-transactions__arrow {
+  color: var(--color-amber);
+}
+
+.settlement-transactions__amount {
+  font-family: var(--font-mono);
+  color: var(--color-text);
+  white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+  .settlement-balances__row {
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      'name amount'
+      'status amount';
+  }
+
+  .settlement-balances__name {
+    grid-area: name;
+  }
+
+  .settlement-balances__status {
+    grid-area: status;
+  }
+
+  .settlement-balances__amount {
+    grid-area: amount;
+  }
+
+  .settlement-transactions__row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .settlement-transactions__parties {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+
+  .settlement-transactions__arrow {
+    transform: rotate(90deg);
+  }
+}

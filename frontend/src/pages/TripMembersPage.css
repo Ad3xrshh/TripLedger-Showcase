@@ -1,0 +1,158 @@
+.trip-members-page {
+  max-width: 560px;
+  animation: trip-members-rise 200ms ease-out;
+}
+
+.trip-members-page__state {
+  max-width: 480px;
+  margin-top: var(--space-2);
+}
+
+.trip-members-page__back-link {
+  display: inline-block;
+  margin-bottom: var(--space-4);
+  color: var(--color-text-muted);
+  font-size: var(--fs-sm);
+  text-decoration: none;
+  transition: color var(--motion-fast);
+}
+
+.trip-members-page__back-link:hover {
+  color: var(--color-ink);
+}
+
+.trip-members-page__title {
+  font-size: var(--fs-xl);
+  margin-bottom: var(--space-5);
+}
+
+.trip-members-page__section {
+  /* Surface (background/border/radius-lg/shadow) comes from the shared
+     .card / .card--lg primitives - see styles/card.css. */
+  padding: var(--space-5);
+  margin-bottom: var(--space-4);
+}
+
+.trip-members-page__section-title {
+  font-size: var(--fs-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-4);
+}
+
+.trip-members-page__member-list,
+.trip-members-page__unit-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.trip-members-page__member,
+.trip-members-page__unit {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.trip-members-page__member:last-child,
+.trip-members-page__unit:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.trip-members-page__member-main {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.trip-members-page__member-name {
+  font-weight: 600;
+  font-size: var(--fs-sm);
+  overflow-wrap: anywhere;
+}
+
+.trip-members-page__you-tag {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--color-amber);
+  border: 1px solid var(--color-amber);
+  border-radius: 999px;
+  padding: 0 var(--space-2);
+}
+
+.trip-members-page__member-meta {
+  display: flex;
+  gap: var(--space-2);
+  font-size: var(--fs-xs);
+  color: var(--color-text-muted);
+  text-transform: capitalize;
+}
+
+.trip-members-page__unit-name {
+  font-weight: 600;
+  font-size: var(--fs-sm);
+}
+
+.trip-members-page__unit-meta {
+  font-size: var(--fs-xs);
+  color: var(--color-text-muted);
+  text-transform: capitalize;
+}
+
+.trip-members-page__unit-delete {
+  margin-left: var(--space-2);
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: var(--fs-xs);
+  text-transform: none;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+  transition: color var(--motion-fast);
+}
+
+.trip-members-page__unit-delete:hover {
+  color: var(--color-negative);
+}
+
+.trip-members-page__inline-form {
+  margin-top: var(--space-5);
+  padding-top: var(--space-5);
+  border-top: 1px dashed var(--color-border-strong);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  align-items: flex-start;
+}
+
+.trip-members-page__inline-form .form-field {
+  width: 100%;
+}
+
+.trip-members-page__error {
+  margin: 0;
+  color: var(--color-negative);
+  font-size: var(--fs-sm);
+}
+
+@keyframes trip-members-rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -1,0 +1,53 @@
+/*
+  Shared badge/pill surface. StatusBadge (trip status) and ExpenseStatus
+  (expense status) are deliberately separate components - they're
+  different enums with different meanings - but they were rendering the
+  identical pill chrome twice. This class is that chrome, defined once;
+  each badge type keeps its own tone--* modifiers for color only.
+
+  Usage: <span className="badge status-badge status-badge--active">
+*/
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--space-2);
+  border-radius: 999px;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-snug);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+/* Generic tone modifiers, available to any new badge built on this
+   primitive (e.g. role tags) without inventing a third pill component. */
+.badge--positive {
+  background: var(--color-positive-soft);
+  color: var(--color-positive-text);
+}
+
+.badge--negative {
+  background: var(--color-negative-soft);
+  color: var(--color-negative);
+}
+
+.badge--warning {
+  background: var(--color-warning-soft);
+  color: var(--color-warning);
+}
+
+.badge--info {
+  background: var(--color-info-soft);
+  color: var(--color-info);
+}
+
+.badge--neutral {
+  background: var(--color-border);
+  color: var(--color-text-muted);
+}
+
+.badge--ink {
+  background: var(--color-ink);
+  color: var(--color-paper-raised);
+}

@@ -1,0 +1,152 @@
+.expense-detail-page {
+  max-width: 640px;
+  animation: expense-detail-rise 200ms ease-out;
+}
+
+.expense-detail-page__state {
+  max-width: 480px;
+  margin-top: var(--space-2);
+}
+
+.expense-detail-page__back-link {
+  display: inline-block;
+  margin-bottom: var(--space-4);
+  color: var(--color-text-muted);
+  font-size: var(--fs-sm);
+  text-decoration: none;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: color var(--motion-fast);
+}
+
+.expense-detail-page__back-link:hover {
+  color: var(--color-ink);
+}
+
+/* Scoped override, not a change to the shared .eyebrow class (which is
+   inline-block by design for contexts where it sits beside other inline
+   content) - here it needs to occupy its own row below the back link
+   rather than flow onto the same line as it, which is what was producing
+   "← ExpensesGOA TEST TRIP PHASE 5" as one run of text. */
+.expense-detail-page__eyebrow {
+  display: block;
+  margin: 0;
+}
+
+.expense-detail-page__header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  margin-top: var(--space-1);
+}
+
+.expense-detail-page__form-header {
+  margin-bottom: var(--space-5);
+}
+
+.expense-detail-page__form-description {
+  margin-top: var(--space-1);
+  color: var(--color-text-muted);
+  font-size: var(--fs-sm);
+}
+
+.expense-detail-page__description {
+  font-size: var(--fs-xl);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.expense-detail-page__amount {
+  margin-top: var(--space-1);
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xl);
+  color: var(--color-text);
+}
+
+.expense-detail-page__facts {
+  /* Surface (background/border/radius-lg/shadow) comes from the shared
+     .card / .card--lg primitives - see styles/card.css. */
+  margin-top: var(--space-5);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: var(--space-4);
+  padding: var(--space-5);
+}
+
+.expense-detail-page__fact {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.expense-detail-page__fact-label {
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-text-muted);
+}
+
+.expense-detail-page__fact-value {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.expense-detail-page__participants {
+  margin-top: var(--space-6);
+}
+
+.expense-detail-page__section-title {
+  font-size: var(--fs-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-3);
+}
+
+.expense-detail-page__participant-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.expense-detail-page__participant-list li {
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-sm);
+  background: var(--color-paper-raised);
+}
+
+.expense-detail-page__title {
+  font-size: var(--fs-xl);
+}
+
+/* Dedicated spacing wrapper for the Edit expense action, matching the
+   margin-top convention already used to separate sibling sections on
+   this page (see .expense-detail-page__participants above and
+   ExpenseVerificationPanel.css's .expense-verification) - the button
+   was previously a bare sibling of the participant list with no space
+   of its own, so it read as glued to the last row. Scoped here rather
+   than adjusting Button's global margins, which every other page's
+   buttons also use. */
+.expense-detail-page__actions {
+  margin-top: var(--space-6);
+}
+
+@keyframes expense-detail-rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

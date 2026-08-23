@@ -1,0 +1,33 @@
+.app-shell {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-shell__body {
+  flex: 1;
+  display: flex;
+  /* Narrow mobile hides the sidebar (see Sidebar.css); without this the
+     body row can still be forced wider than the viewport by its children,
+     causing horizontal page scroll. */
+  min-width: 0;
+}
+
+.app-shell__content {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  /* Centers the capped-width content in the leftover flex space on wide
+     desktops (1280/1440px) rather than letting it sit flush against the
+     sidebar with empty space to the right - auto margins on a flex item
+     absorb the container's free space along the main axis. */
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  padding: var(--space-6);
+}
+
+@media (max-width: 719px) {
+  .app-shell__content {
+    padding: var(--space-4);
+  }
+}

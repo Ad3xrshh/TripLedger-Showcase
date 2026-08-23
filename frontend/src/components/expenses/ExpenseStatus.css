@@ -1,0 +1,34 @@
+/*
+  Pill chrome (display/padding/radius/size/weight/tracking) now lives in
+  the shared .badge class - see styles/badge.css. This file only sets the
+  per-status color.
+
+  "Pending" uses --color-warning (attention-needed) rather than amber -
+  amber is reserved for actions and money per tokens.css, and a pending
+  expense is a caution state, not a money-moving moment.
+*/
+
+.expense-status--pending {
+  background: var(--color-warning-soft);
+  color: var(--color-warning);
+}
+
+.expense-status--verified {
+  background: var(--color-positive-soft);
+  color: var(--color-positive-text);
+}
+
+.expense-status--disputed {
+  background: var(--color-negative-soft);
+  color: var(--color-negative);
+}
+
+.expense-status--rejected {
+  background: var(--color-border);
+  color: var(--color-text-muted);
+}
+
+.expense-status--locked {
+  background: var(--color-ink);
+  color: var(--color-paper-raised);
+}

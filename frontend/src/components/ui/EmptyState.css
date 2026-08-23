@@ -1,0 +1,99 @@
+/*
+  Two contexts:
+  - Page-level (default): a quiet dashed-border block with generous
+    padding, centered - used where an empty state is the main content of
+    a page (My Trips, Expenses).
+  - Compact (nested in a dashboard card): no border/padding of its own,
+    left-aligned - the parent .card already provides the surface. Mirrors
+    the existing .dashboard-card__empty pattern this replaces.
+*/
+
+.empty-state {
+  border: 1px dashed var(--color-border-strong);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.empty-state__eyebrow {
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.empty-state__title {
+  font-family: var(--font-display);
+  font-weight: var(--fw-semibold);
+  font-size: var(--fs-md);
+  color: var(--color-text);
+  margin: 0;
+}
+
+.empty-state__description {
+  color: var(--color-text-muted);
+  font-size: var(--fs-sm);
+  max-width: 40ch;
+  margin: 0;
+}
+
+.empty-state__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+
+/* A "you're all caught up" / "all settled" moment should read as
+   complete, not as something missing - drop the dashed border (the
+   visual language for "not filled in yet") and tint the title with the
+   same positive color used for a settled balance elsewhere in the app. */
+.empty-state--positive {
+  border-style: solid;
+  border-color: var(--color-border);
+}
+
+.empty-state--positive .empty-state__title {
+  color: var(--color-positive-text);
+}
+
+/* Nested inside a dashboard card: no border/padding of its own
+   (the parent .card already has both), left-aligned to match the card's
+   other content instead of centered. */
+.empty-state--compact {
+  border: none;
+  padding: 0;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.empty-state--compact .empty-state__title {
+  font-size: var(--fs-sm);
+}
+
+.empty-state--compact .empty-state__description {
+  max-width: none;
+}
+
+.empty-state--compact .empty-state__actions {
+  justify-content: flex-start;
+  margin-top: var(--space-3);
+}
+
+@media (max-width: 480px) {
+  .empty-state {
+    padding: var(--space-5);
+  }
+
+  .empty-state__actions {
+    flex-direction: column;
+    align-self: stretch;
+  }
+
+  .empty-state__actions .btn {
+    text-align: center;
+  }
+}

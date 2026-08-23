@@ -1,0 +1,152 @@
+/*
+  Trip Ledger design tokens.
+
+  Direction: a shared trip ledger, kept honest like a paper boarding pass.
+  Ink navy for structure and trust, warm amber for the one accent that
+  matters (money moving, an action to take). Numbers get a mono face so
+  amounts and join codes read like a ticket stub, not prose.
+*/
+
+:root {
+  /* Color: surfaces */
+  --color-paper: #f6f5f1;
+  --color-paper-raised: #ffffff;
+  /* Sunken surface: table stripes, code/join-code blocks, inset panels -
+     one step darker than the app background, for content that sits
+     "below" the page rather than "above" it like a card. */
+  --color-paper-sunken: #efede6;
+
+  /* Color: text */
+  --color-text: #1b1d22;
+  --color-text-muted: #5b6270;
+  /* Faint text: timestamps, placeholder/helper copy - one step quieter
+     than muted, never used for anything the user needs to act on. */
+  --color-text-faint: #8b8f9b;
+
+  /* Color: borders */
+  --color-border: #e1ddd2;
+  --color-border-strong: #c9c3b3;
+
+  /* Color: ink (structure/trust) + amber (the one accent - actions and
+     money moving; never used as a fill or a second competing accent) */
+  --color-ink: #16213a;
+  --color-ink-soft: #2c3a5e;
+  --color-amber: #e2a63b;
+  --color-amber-soft: #f3d9a3;
+  /* --color-amber measures 1.97:1 on paper - fine for a hover accent or
+     a background fill, but unreadable as small persistent body text.
+     This darker shade (5.4:1 on paper) is for that one case only. */
+  --color-amber-text: #8a5a12;
+
+  /* Color: brand mark. This is the teal from the official TripLedger
+     logo/wordmark (see the landing page header and the supplied brand
+     assets) - reserved for the literal brand mark (TripLedgerMark) only.
+     It is not a second UI accent: amber remains the one color that means
+     "an action/money moment" everywhere else in the app, per the note
+     on --color-amber above. */
+  --color-brand-teal: #2dbfa1;
+
+  /* Color: semantic */
+  --color-positive: #1f9e6b;
+  --color-positive-soft: color-mix(in srgb, var(--color-positive) 15%, transparent);
+  /* Darker than --color-positive specifically for text: the base value
+     measures 3.12:1 on paper and 2.67-2.88:1 on --color-positive-soft
+     (this token's own badge background) - both fail WCAG AA's 4.5:1 for
+     normal text. This measures 4.5:1+ in every context it's used
+     (paper, paper-raised, and on top of -soft). Only for text color -
+     --color-positive itself is unchanged for backgrounds/borders/soft
+     tints, so badge/toast backgrounds and every other use of the base
+     token look exactly as before. */
+  --color-positive-text: #0e7a53;
+  --color-negative: #c0432f;
+  --color-negative-soft: color-mix(in srgb, var(--color-negative) 15%, transparent);
+  /* Warning is distinct from amber: amber means "an action/money moment",
+     warning means "pay attention" - conflating them was a gap found in
+     the 9.9.0 audit (StatusBadge--closing borrowed amber for this). */
+  --color-warning: #b8791c;
+  --color-warning-soft: color-mix(in srgb, var(--color-warning) 18%, transparent);
+  --color-info: #3868a8;
+  --color-info-soft: color-mix(in srgb, var(--color-info) 15%, transparent);
+
+  /* Type: families */
+  --font-display: 'Space Grotesk', 'Segoe UI', sans-serif;
+  --font-body: 'Inter', 'Segoe UI', sans-serif;
+  /* Every number - money, dates, join codes, IDs - renders in mono, never
+     in the display or body face. This is what makes the app read like a
+     ledger rather than prose with numbers in it. */
+  --font-mono: 'IBM Plex Mono', 'SFMono-Regular', monospace;
+
+  /* Type: size scale */
+  --fs-xs: 0.75rem;
+  --fs-sm: 0.875rem;
+  --fs-md: 1rem;
+  --fs-lg: 1.25rem;
+  --fs-xl: 1.75rem;
+  /* Reserved for the trip name on TripDetailPage only - not a general
+     heading size. */
+  --fs-2xl: 2.25rem;
+
+  /* Type: weight scale - named by role, not by number, so components pick
+     the role they mean rather than guessing a numeric weight. */
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+
+  /* Type: line-height scale */
+  --lh-tight: 1.2;   /* headings, large numerals */
+  --lh-snug: 1.35;   /* card titles, labels */
+  --lh-normal: 1.5;  /* body copy (matches existing body line-height) */
+
+  /* Layout: spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+
+  /* Layout: radius - three levels only. sm for controls, md for cards,
+     lg reserved for large containers (dialogs, the closure panel), never
+     applied by default to an ordinary card just because it's "bigger". */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+
+  /* Elevation - two levels. shadow-card is the resting state for every
+     card; shadow-raised is reserved for things that float above the page
+     (open dropdowns, dialogs, toasts), not for cards on hover. */
+  --shadow-card: 0 1px 2px rgba(22, 33, 58, 0.06), 0 8px 24px rgba(22, 33, 58, 0.06);
+  --shadow-raised: 0 4px 8px rgba(22, 33, 58, 0.08), 0 16px 32px rgba(22, 33, 58, 0.1);
+
+  /* Borders */
+  --border-width: 1px;
+
+  /* Focus ring - one definition, referenced everywhere a focus style is
+     set, instead of each component hardcoding the same amber outline. */
+  --focus-ring: 2px solid var(--color-amber);
+  --focus-ring-offset: 2px;
+
+  /* Motion - deliberately minimal. Two durations cover every transition
+     in the app; nothing here implies choreography or page-load sequences. */
+  --motion-fast: 120ms ease;
+  --motion-base: 150ms ease;
+
+  /* Responsive breakpoints - CSS custom properties can't be used inside
+     @media conditions, so these are documented constants for consistent
+     reuse rather than live tokens. Use the literal px values below in
+     @media queries and keep them in sync with this list.
+       --bp-narrow:  0-480px    (@media (max-width: 480px))  - narrow
+         phones (≤375px-ish); a secondary tier within mobile for content
+         that needs a further step down (e.g. 2-col field grids to 1-col,
+         reduced card/panel padding) beyond what the mobile tier alone
+         requires.
+       --bp-mobile:  0-719px    (@media (max-width: 719px))
+       --bp-tablet:  720-1023px (@media (min-width: 720px) and (max-width: 1023px))
+       --bp-desktop: 1024px+    (@media (min-width: 1024px)) */
+
+  --sidebar-width: 248px;
+  --topbar-height: 64px;
+  --content-max-width: 960px;
+}

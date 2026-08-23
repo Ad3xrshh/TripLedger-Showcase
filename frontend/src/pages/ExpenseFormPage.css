@@ -1,0 +1,48 @@
+.expense-form-page {
+  max-width: 480px;
+  animation: expense-form-rise 200ms ease-out;
+}
+
+.expense-form-page__state {
+  max-width: 480px;
+  margin-top: var(--space-2);
+  color: var(--color-text-muted);
+}
+
+.expense-form-page__back-link {
+  display: inline-block;
+  margin-bottom: var(--space-4);
+  color: var(--color-text-muted);
+  font-size: var(--fs-sm);
+  text-decoration: none;
+  transition: color var(--motion-fast);
+}
+
+.expense-form-page__back-link:hover {
+  color: var(--color-ink);
+}
+
+.expense-form-page__header {
+  margin-bottom: var(--space-5);
+}
+
+.expense-form-page__title {
+  font-size: var(--fs-xl);
+}
+
+.expense-form-page__description {
+  margin-top: var(--space-1);
+  color: var(--color-text-muted);
+  font-size: var(--fs-sm);
+}
+
+@keyframes expense-form-rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

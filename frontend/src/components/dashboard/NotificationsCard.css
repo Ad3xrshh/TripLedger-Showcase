@@ -1,0 +1,26 @@
+.notifications-card__item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.notifications-card__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-amber);
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+
+.notifications-card__message {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--color-text);
+}
+
+.notifications-card__time {
+  margin: 2px 0 0;
+  font-size: var(--fs-xs);
+  color: var(--color-text-muted);
+}

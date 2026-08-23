@@ -1,0 +1,120 @@
+/*
+  Shared chrome for every dashboard card, and the responsive grid that
+  arranges them. Reuses the same tokens as trip-card/expense-card
+  (--color-paper-raised, --shadow-card, --radius-lg) rather than
+  introducing a second visual language.
+*/
+
+/*
+  Shared chrome for every dashboard card, and the responsive grid that
+  arranges them. Reuses the shared .card primitive (see styles/card.css)
+  for surface, rather than introducing a second visual language.
+*/
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-5);
+  margin-top: var(--space-6);
+}
+
+.dashboard-grid__full {
+  grid-column: 1 / -1;
+}
+
+/* Two columns is comfortable on real desktop width, but at tablet widths
+   (720-1023px, sidebar still visible) it squeezes each card into a
+   ~200px column - recompose to a single column through the whole
+   tablet range rather than just below the mobile threshold. */
+@media (max-width: 1023px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dashboard-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  /* Grid items default to min-width: auto, which lets unbreakable content
+     (e.g. a long member name with no spaces) force the grid track wider
+     than its minmax() minimum - this lets the card actually shrink so
+     text wrapping/truncation inside it can do its job instead. */
+  min-width: 0;
+  animation: dashboard-card-in 220ms ease-out both;
+}
+
+.dashboard-grid > .dashboard-card:nth-child(1) {
+  animation-delay: 0ms;
+}
+.dashboard-grid > .dashboard-card:nth-child(2) {
+  animation-delay: 30ms;
+}
+.dashboard-grid > .dashboard-card:nth-child(3) {
+  animation-delay: 60ms;
+}
+.dashboard-grid > .dashboard-card:nth-child(4) {
+  animation-delay: 90ms;
+}
+.dashboard-grid > .dashboard-card:nth-child(5) {
+  animation-delay: 120ms;
+}
+.dashboard-grid > .dashboard-card:nth-child(6) {
+  animation-delay: 150ms;
+}
+
+@keyframes dashboard-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dashboard-card__title {
+  font-size: var(--fs-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-text-muted);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dashboard-card__link {
+  color: var(--color-ink);
+  font-weight: 600;
+  font-size: var(--fs-xs);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.dashboard-card__link:hover {
+  color: var(--color-amber);
+}
+
+/* Per-card loading skeletons now use the shared .skeleton primitive from
+   styles/skeleton.css (imported globally) instead of a card-local shimmer,
+   so there's one loading treatment for the whole app, not a
+   dashboard-specific one. */
+
+.dashboard-card__recent-expenses {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-3);
+}
+
+.dashboard-card__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}

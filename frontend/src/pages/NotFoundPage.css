@@ -1,0 +1,12 @@
+.not-found-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+  background: var(--color-paper);
+}
+
+.not-found-page .error-state {
+  max-width: 420px;
+}

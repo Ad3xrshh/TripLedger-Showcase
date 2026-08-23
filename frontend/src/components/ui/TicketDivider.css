@@ -1,0 +1,8 @@
+.ticket-divider {
+  height: 1px;
+  width: 100%;
+  background-image: radial-gradient(circle, var(--color-border-strong) 1.5px, transparent 1.5px);
+  background-size: 10px 1px;
+  background-repeat: repeat-x;
+  background-position: center;
+}

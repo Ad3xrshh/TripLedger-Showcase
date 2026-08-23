@@ -1,0 +1,174 @@
+.trip-form-page {
+  max-width: 480px;
+  animation: trip-form-rise 200ms ease-out;
+}
+
+/* Create needs room for two-column date fields and the budget/rules
+   group without feeling cramped; Join is intentionally narrower and
+   more focused, since its whole job is one field. */
+.trip-form-page--create {
+  max-width: 620px;
+}
+
+.trip-form-page--join {
+  max-width: 440px;
+}
+
+.trip-form-page__back {
+  display: inline-block;
+  margin-bottom: var(--space-4);
+  color: var(--color-text-muted);
+  font-size: var(--fs-sm);
+  text-decoration: none;
+}
+
+.trip-form-page__back:hover {
+  color: var(--color-ink);
+}
+
+.trip-form-page__header {
+  margin-bottom: var(--space-5);
+}
+
+.trip-form-page__title {
+  font-size: var(--fs-xl);
+}
+
+.trip-form-page__description {
+  margin-top: var(--space-1);
+  color: var(--color-text-muted);
+  font-size: var(--fs-sm);
+  max-width: 52ch;
+}
+
+.trip-form-page__form {
+  /* Surface (background/border/radius-lg/shadow) comes from the shared
+     .card / .card--lg primitives - see styles/card.css. */
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-6);
+}
+
+.trip-form-page__section {
+  /* Reset native <fieldset> chrome (border/padding/margin) and its
+     default min-width: min-content, which otherwise fights the flex
+     column above. */
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Uniform spacing between a section's direct children, replacing a flex
+   `gap` that (in browsers where a flex fieldset's <legend> is itself a
+   flex item) applied evenly between the legend and every field alike -
+   including the description, which needed a *tighter* gap than that,
+   and previously fought the shared gap with a negative top margin sized
+   to exactly cancel it. That worked only as long as the gap value never
+   changed and nothing ever reordered - here, each child instead owns
+   its own top margin, so the legend/description pairing can be tighter
+   than the rest without depending on a hack. margin-top (not `gap`) so
+   the first child (the legend) never gets one. */
+.trip-form-page__section > * + * {
+  margin-top: var(--space-4);
+}
+
+.trip-form-page__section-label {
+  padding: 0;
+  color: var(--color-text-muted);
+}
+
+.trip-form-page__section-description {
+  /* Tighter than the section's default var(--space-4) - this sits
+     directly under its section's legend, not a peer of the fields
+     below it. */
+  margin-top: var(--space-1);
+  color: var(--color-text-muted);
+  font-size: var(--fs-xs);
+}
+
+.trip-form-page__field-note {
+  /* Tighter than the section's default var(--space-4) - this is a
+     caption for the field immediately above it, not a peer of the
+     next field. */
+  margin-top: var(--space-1);
+  color: var(--color-text-muted);
+  font-size: var(--fs-xs);
+}
+
+.trip-form-page__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+.trip-form-page__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}
+
+/* Join code: the visual focal point of this page - large, centered,
+   monospace, and letter-spaced so a 7-character code reads clearly.
+   Wraps the existing FormField rather than replacing it, so its
+   label/error/aria-invalid/aria-describedby wiring is unchanged. */
+.join-code-field {
+  text-align: center;
+}
+
+.join-code-field .form-field__label {
+  display: block;
+  font-size: var(--fs-sm);
+  color: var(--color-text-muted);
+}
+
+.join-code-field__input {
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xl);
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  padding: var(--space-3) var(--space-4);
+}
+
+.join-code-field__hint {
+  margin: var(--space-2) 0 0;
+  color: var(--color-text-muted);
+  font-size: var(--fs-xs);
+}
+
+@media (max-width: 480px) {
+  .trip-form-page__row {
+    grid-template-columns: 1fr;
+  }
+
+  .trip-form-page__form {
+    padding: var(--space-5);
+  }
+
+  /* Primary action first for thumb reach, Cancel below it - both full
+     width so neither reads as the "small" throwaway option. */
+  .trip-form-page__actions {
+    flex-direction: column-reverse;
+  }
+
+  .trip-form-page__actions .btn,
+  .trip-form-page__actions .btn--ghost {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@keyframes trip-form-rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

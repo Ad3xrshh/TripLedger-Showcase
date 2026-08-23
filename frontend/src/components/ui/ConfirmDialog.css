@@ -1,0 +1,102 @@
+/*
+  First place in the app that needs a z-index, since this is the first
+  true overlay - documented here rather than adding a token for a value
+  used in exactly one place.
+*/
+
+.confirm-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: color-mix(in srgb, var(--color-ink) 45%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  animation: confirm-dialog-backdrop-in var(--motion-base) ease;
+}
+
+.confirm-dialog {
+  width: 100%;
+  max-width: 440px;
+  max-height: calc(100vh - var(--space-6));
+  overflow-y: auto;
+  background: var(--color-paper-raised);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-raised);
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  animation: confirm-dialog-in var(--motion-base) ease;
+}
+
+.confirm-dialog__title {
+  font-family: var(--font-display);
+  font-weight: var(--fw-semibold);
+  font-size: var(--fs-lg);
+  color: var(--color-text);
+  margin: 0;
+}
+
+.confirm-dialog__description {
+  color: var(--color-text-muted);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-normal);
+  margin: 0;
+}
+
+.confirm-dialog__body {
+  margin-top: var(--space-1);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.confirm-dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+
+/* Red is a signal on the one button that matters, not a surface treatment
+   on the dialog itself - same principle as ErrorState.css. Button.css
+   already styles btn--danger; nothing to override here. */
+
+@keyframes confirm-dialog-backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes confirm-dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 480px) {
+  .confirm-dialog {
+    padding: var(--space-5);
+    max-height: calc(100vh - var(--space-4));
+  }
+
+  .confirm-dialog__actions {
+    flex-direction: column-reverse;
+    align-self: stretch;
+  }
+
+  .confirm-dialog__actions .btn {
+    width: 100%;
+  }
+}

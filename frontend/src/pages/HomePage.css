@@ -1,0 +1,66 @@
+.home-page__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-6);
+}
+
+.home-page__heading {
+  min-width: 0;
+}
+
+.home-page__title {
+  font-size: var(--fs-xl);
+}
+
+.home-page__subtitle {
+  margin-top: var(--space-1);
+  color: var(--color-text-muted);
+  font-size: var(--fs-md);
+}
+
+.home-page__actions {
+  display: flex;
+  gap: var(--space-3);
+  flex-shrink: 0;
+}
+
+.home-page__section + .home-page__section {
+  margin-top: var(--space-6);
+}
+
+.home-page__section-heading {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-text-muted);
+  margin: 0 0 var(--space-3);
+}
+
+.home-page__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-4);
+}
+
+@media (max-width: 480px) {
+  .home-page__header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .home-page__actions {
+    flex-direction: column;
+  }
+
+  /* At the narrowest phone widths the 280px minimum column can outgrow
+     the available content width (e.g. 320px viewport minus padding) and
+     force horizontal scroll - drop the minmax and let cards take the
+     full row instead. */
+  .home-page__grid {
+    grid-template-columns: 1fr;
+  }
+}

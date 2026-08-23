@@ -1,0 +1,37 @@
+.google-signin {
+  position: relative;
+  width: 100%;
+}
+
+.google-signin__placeholder {
+  width: 100%;
+}
+
+.google-signin__button {
+  /* Google's renderButton sizes its own iframe to the `width` option
+     passed in GoogleSignInButton.jsx - this just keeps the wrapping div
+     from collapsing to 0 width before that iframe mounts, and centers
+     it the same way the rest of the auth form's controls span full
+     width (see AuthForm.css's .auth-form__submit). */
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.google-signin__button--hidden {
+  /* The skeleton placeholder above covers this visually while Google's
+     script is still loading - hidden outright (not just visually) so it
+     can't be tabbed to or clicked before the real button is ready. */
+  visibility: hidden;
+  height: 0;
+  overflow: hidden;
+}
+
+.google-signin__button--disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.google-signin__button > div {
+  width: 100% !important;
+}

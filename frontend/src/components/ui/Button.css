@@ -1,0 +1,88 @@
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  border: var(--border-width) solid transparent;
+  transition: background-color var(--motion-fast), border-color var(--motion-fast), transform 80ms ease, opacity var(--motion-fast);
+}
+
+.btn--sm {
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--fs-xs);
+}
+
+.btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn--primary {
+  background: var(--color-ink);
+  color: var(--color-paper-raised);
+}
+
+.btn--primary:hover:not(:disabled) {
+  background: var(--color-ink-soft);
+}
+
+.btn--secondary {
+  background: transparent;
+  color: var(--color-ink);
+  border-color: var(--color-border-strong);
+}
+
+.btn--secondary:hover:not(:disabled) {
+  border-color: var(--color-ink);
+}
+
+/* For destructive actions - reject an expense, leave a trip. Outlined at
+   rest so it doesn't compete visually with the primary action on the
+   same screen; fills red only on hover/press as extra confirmation
+   weight for a destructive click. */
+.btn--danger {
+  background: transparent;
+  color: var(--color-negative);
+  border-color: var(--color-negative);
+}
+
+.btn--danger:hover:not(:disabled) {
+  background: var(--color-negative);
+  color: var(--color-paper-raised);
+}
+
+/* Lowest emphasis - inline actions like "Cancel" inside a form, where a
+   bordered button would out-compete the field it sits next to. */
+.btn--ghost {
+  background: transparent;
+  color: var(--color-text-muted);
+  border-color: transparent;
+}
+
+.btn--ghost:hover:not(:disabled) {
+  color: var(--color-text);
+}
+
+.btn__spinner {
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  opacity: 0.8;
+  animation: btn-spin 600ms linear infinite;
+}
+
+@keyframes btn-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

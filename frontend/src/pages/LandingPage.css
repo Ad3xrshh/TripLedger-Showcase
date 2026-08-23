@@ -1,0 +1,879 @@
+/*
+  Ported from the supplied tripledger_landing.html reference build.
+  Two deliberate departures from that file, both explained where they
+  apply below:
+  1. Every rule that targeted `body`/`:root` in the original targets
+     `.landing-page` (or a `.landing-page--*` modifier) here instead -
+     this page is one route inside a shared SPA, not a document that
+     owns the whole <body>.
+  2. The original's hero background/ticket-card/floating coins are
+     drawn by a hand-written Three.js scene onto two <canvas> layers
+     (see components/landing/HeroScene.jsx, mounted from
+     LandingPage.jsx and rendering into #scene-bg/#scene-fg below).
+*/
+
+.landing-page {
+  --bg-inner: #24365e;
+  --bg-mid: #16213a;
+  --bg-outer: #070a12;
+  --accent: #e2a63b;
+  --accent-soft: #f3d9a3;
+  --accent-text: #1b1408;
+
+  background: radial-gradient(circle at 50% 42%, var(--bg-inner) 0%, var(--bg-mid) 55%, var(--bg-outer) 100%);
+  color: #fff;
+  font-family: var(--font-body);
+  min-height: 100vh;
+  transition: background 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.landing-page * {
+  box-sizing: border-box;
+}
+
+.landing-page .mono {
+  font-family: var(--font-mono);
+}
+
+.landing-page--settled {
+  --bg-inner: #1c4c3d;
+  --bg-mid: #123326;
+  --bg-outer: #06120d;
+  --accent: #1f9e6b;
+  --accent-soft: #8fd6b8;
+  --accent-text: #06170f;
+}
+
+/* Ensure all headings inside landing page default to crisp white font */
+.landing-page h1,
+.landing-page h2,
+.landing-page h3,
+.landing-page h4 {
+  color: #fff;
+}
+
+/* ---------- rising punch-hole particles ---------- */
+#bubbles-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.punch {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px 1px color-mix(in srgb, var(--accent) 70%, transparent);
+  pointer-events: none;
+}
+
+@keyframes floatUp {
+  0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+  10% { opacity: 0.55; }
+  90% { opacity: 0.35; }
+  100% { transform: translateY(-112vh) translateX(24px) rotate(180deg); opacity: 0; }
+}
+
+/* Three.js double canvas setup: bg behind hero text, fg in front.
+   Scoped under .landing-page for consistency with this file's own
+   convention (see header comment) - position:fixed means the visual
+   result is identical either way, this only prevents the bare #id from
+   ever matching an unrelated element outside this page. */
+.landing-page #scene-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.landing-page #scene-fg {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  pointer-events: none;
+}
+
+
+/* ---------- header ---------- */
+.landing-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2rem 4%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+}
+
+.landing-header__logo {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.landing-header__logo-icon {
+  flex-shrink: 0;
+  display: block;
+}
+
+.landing-header__logo-word {
+  display: inline-flex;
+  letter-spacing: -0.01em;
+}
+
+.landing-header__logo-trip {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.landing-header__logo-ledger {
+  color: #2dbfa1;
+  font-weight: 500;
+}
+
+.landing-nav {
+  display: flex;
+  gap: 0.3rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  padding: 0.4rem;
+  border-radius: 100px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.18),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+.landing-nav__item {
+  font-family: var(--font-body);
+  color: rgba(255, 255, 255, 0.72);
+  text-decoration: none;
+  font-size: 0.83rem;
+  font-weight: 500;
+  padding: 0.5rem 1.15rem;
+  border-radius: 100px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.landing-nav__item:hover,
+.landing-nav__item.landing-nav__item--active {
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+.landing-header__cta {
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  padding: 0.85rem 1.7rem;
+  border-radius: 100px;
+  font-weight: 600;
+  font-size: 0.83rem;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+
+.landing-header__cta:hover {
+  background: rgba(0, 0, 0, 0.65);
+  transform: translateY(-2px);
+}
+
+/* ---------- mobile nav (Pass 2.7) ---------- */
+/* Hidden at desktop widths - .landing-nav (the pill nav) is the visible
+   navigation there. Only shown once .landing-nav hides at 640px, below. */
+.landing-mobile-nav-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.landing-mobile-nav-toggle:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.24);
+}
+
+.landing-mobile-nav {
+  position: fixed;
+  /* Clears the mobile header exactly: header's top+bottom padding
+     (1.1rem each, set in the 640px media query below) plus the 40px
+     toggle button's own height, plus a small visual gap. */
+  top: calc(1.1rem + 1.1rem + 40px + 0.5rem);
+  left: 5%;
+  right: 5%;
+  /* Matches .landing-header's z-index (100), not the .landing-nav pill's
+     original 99 - the header itself already sits under #scene-fg's
+     particle canvas (z-index: 110, pointer-events: none) and stays
+     legible there because the canvas is mostly transparent; this keeps
+     the dropdown menu it opens from stacking any lower than the header
+     it hangs off of. */
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.6rem;
+  background: rgba(12, 17, 32, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 20px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.28),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+  animation: landing-mobile-nav-in 0.18s ease-out;
+}
+
+.landing-mobile-nav__item {
+  font-family: var(--font-body);
+  color: rgba(255, 255, 255, 0.78);
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.landing-mobile-nav__item:hover,
+.landing-mobile-nav__item.landing-mobile-nav__item--active {
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+.landing-mobile-nav__cta {
+  margin-top: 0.3rem;
+  text-align: center;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+@keyframes landing-mobile-nav-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------- hero shell ---------- */
+.landing-page__view--home {
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+.landing-page--scrollable .landing-page__view--home {
+  height: auto;
+  overflow: visible;
+}
+
+.landing-hero {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4%;
+  position: relative;
+  z-index: 5;
+}
+
+.landing-hero__content {
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+/* ---------- left column ---------- */
+.landing-hero__left {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 6rem 0;
+  gap: 1.8rem;
+  z-index: 10;
+  max-width: 640px;
+}
+
+.landing-hero__title {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 6.6vw, 6.4rem);
+  line-height: 0.98;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.landing-hero__title-outline {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.landing-hero__title-accent {
+  color: var(--accent);
+  transition: color 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.landing-hero__description {
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 1.05rem;
+  line-height: 1.6;
+  max-width: 420px;
+  margin: 0;
+}
+
+.landing-hero__primary-btn {
+  display: flex;
+  align-items: center;
+  gap: 1.3rem;
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 0.4rem 0.4rem 0.4rem 1.5rem;
+  border-radius: 100px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  width: fit-content;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.landing-hero__primary-btn:hover {
+  background: rgba(0, 0, 0, 0.65);
+  transform: translateY(-3px);
+}
+
+.landing-hero__plus-icon {
+  background: var(--accent);
+  color: var(--accent-text);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  font-weight: 900;
+  transition: background 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.landing-hero__trust {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: auto;
+}
+
+.landing-hero__trust-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.landing-hero__trust-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.landing-hero__trust-title {
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.landing-hero__trust-num {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+/* ---------- right column ---------- */
+.landing-hero__right {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-end;
+  text-align: right;
+  height: 100%;
+  padding: 6rem 0;
+  z-index: 10;
+  width: 420px;
+}
+
+.landing-switcher {
+  display: flex;
+  flex-direction: column;
+  gap: 1.3rem;
+  align-items: flex-end;
+}
+
+.landing-switcher__eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+}
+
+.landing-state-cards {
+  display: flex;
+  gap: 0.9rem;
+}
+
+.landing-state-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 1.3rem 1.1rem 1.1rem;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  cursor: pointer;
+  width: 156px;
+  text-align: left;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  backdrop-filter: blur(10px);
+  color: inherit;
+  font: inherit;
+}
+
+.landing-state-card:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.32);
+  transform: translateY(-4px);
+}
+
+.landing-state-card--active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.landing-state-card__icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.08);
+  transition: background 0.4s ease;
+}
+
+.landing-state-card--active .landing-state-card__icon {
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+.landing-state-card__label {
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.landing-state-card__sub {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.landing-hero__side-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 4.4vw, 4rem);
+  line-height: 1;
+  font-weight: 700;
+  align-self: flex-end;
+  text-align: right;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+/* ---------- hero ticket card (CSS/SVG replacement for the canvas-drawn
+   3D ticket - see the integration notes in LandingPage.jsx) ---------- */
+.landing-ticket {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -46%);
+  width: min(420px, 86vw);
+  background: var(--bg-mid);
+  border-radius: 22px;
+  padding: 1.7rem 1.8rem 1.5rem;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.45);
+  z-index: 1;
+  transition:
+    background 1.2s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.landing-ticket__stripe {
+  height: 6px;
+  margin: -1.7rem -1.8rem 1.3rem;
+  border-radius: 22px 22px 0 0;
+  background: var(--accent);
+  transition: background 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.landing-ticket__title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.35rem;
+}
+
+.landing-ticket__meta {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 0.2rem;
+}
+
+.landing-ticket__perforation {
+  border: none;
+  border-top: 3px dashed rgba(255, 255, 255, 0.25);
+  margin: 1.6rem 0;
+}
+
+.landing-ticket__amount {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 2rem;
+}
+
+.landing-ticket__amount-label {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 0.2rem;
+}
+
+.landing-ticket__stamp {
+  position: absolute;
+  right: 1.6rem;
+  bottom: 1.4rem;
+  border: 2px solid var(--accent);
+  color: var(--accent);
+  border-radius: 999px;
+  padding: 0.3rem 0.9rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  transform: rotate(-10deg);
+  transition:
+    border-color 1.2s cubic-bezier(0.4, 0, 0.2, 1),
+    color 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (max-width: 1200px) {
+  .landing-page__view--home {
+    height: auto;
+    overflow: visible;
+  }
+
+  .landing-hero {
+    height: auto;
+    min-height: 100vh;
+    padding-top: 7rem;
+  }
+
+  .landing-hero__content {
+    flex-direction: column;
+    align-items: center;
+    gap: 3rem;
+    padding-bottom: 4rem;
+    height: auto;
+  }
+
+  .landing-hero__left,
+  .landing-hero__right {
+    align-items: center;
+    text-align: center;
+    padding: 0;
+    width: 100%;
+    max-width: 520px;
+  }
+
+  .landing-hero__title,
+  .landing-hero__side-title {
+    text-align: center;
+  }
+
+  .landing-hero__side-title {
+    align-self: center;
+  }
+
+  .landing-hero__trust {
+    margin-top: 1.5rem;
+  }
+
+  .landing-ticket {
+    position: relative;
+    top: auto;
+    left: auto;
+    transform: none;
+    margin-top: 2rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .landing-header {
+    padding: 1.1rem 5%;
+  }
+
+  .landing-nav {
+    display: none;
+  }
+
+  /* The pill nav's replacement below 640px - see .landing-mobile-nav-toggle
+     above, which stays hidden (display: none) at every wider breakpoint. */
+  .landing-mobile-nav-toggle {
+    display: inline-flex;
+  }
+
+  .landing-header__logo {
+    font-size: 1rem;
+  }
+
+  .landing-header__logo-icon {
+    width: 28px;
+    height: 25px;
+  }
+
+  .landing-header__cta {
+    padding: 0.7rem 1.3rem;
+    font-size: 0.78rem;
+  }
+
+  .landing-hero__right {
+    width: 100%;
+  }
+
+  .landing-state-cards {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+/* ---------- shared "page" layout for How it works / FAQ ---------- */
+.landing-page__view--content {
+  position: relative;
+  z-index: 5;
+  min-height: 100vh;
+}
+
+.landing-page__inner {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 9rem 6% 7rem;
+}
+
+.landing-page__eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+}
+
+.landing-page__title {
+  font-family: var(--font-display);
+  font-size: clamp(2.3rem, 5vw, 3.6rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-top: 0.6rem;
+  color: #fff;
+}
+
+.landing-page__lede {
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 1.05rem;
+  line-height: 1.6;
+  max-width: 640px;
+  margin-top: 1rem;
+}
+
+.landing-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  margin-top: 3rem;
+}
+
+.landing-step-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 18px;
+  padding: 1.7rem 1.8rem 1.5rem;
+}
+
+.landing-step-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 1.8rem;
+  right: 1.8rem;
+  height: 3px;
+  border-radius: 0 0 3px 3px;
+  background: var(--accent);
+  transition: background 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.landing-step-card__tag {
+  display: inline-block;
+  font-size: 0.75rem;
+  color: var(--accent);
+  letter-spacing: 0.08em;
+  margin-bottom: 0.6rem;
+  transition: color 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.landing-step-card h3 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: #fff;
+}
+
+.landing-step-card p {
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.landing-step-card strong {
+  color: #fff;
+  font-weight: 600;
+}
+
+.landing-tone-yellow {
+  color: #e2c23b;
+  font-weight: 600;
+}
+
+.landing-tone-red {
+  color: #e0685a;
+  font-weight: 600;
+}
+
+.landing-page__note {
+  margin-top: 2.6rem;
+  padding: 1.4rem 1.6rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px dashed rgba(255, 255, 255, 0.18);
+}
+
+.landing-page__note p {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.92rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.landing-page__note strong {
+  color: #fff;
+}
+
+.landing-faq-group {
+  margin-top: 2.6rem;
+}
+
+.landing-faq-group__title {
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+  display: block;
+  margin-bottom: 0.9rem;
+  transition: color 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.landing-faq-item {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 1rem 0;
+}
+
+.landing-faq-item summary {
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1rem;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  color: #fff;
+}
+
+.landing-faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.landing-faq-item summary::after {
+  content: '+';
+  font-size: 1.3rem;
+  color: var(--accent);
+  flex-shrink: 0;
+  transition:
+    transform 0.25s ease,
+    color 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.landing-faq-item[open] summary::after {
+  transform: rotate(45deg);
+}
+
+.landing-faq-item p {
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 0.93rem;
+  line-height: 1.6;
+  margin-top: 0.8rem;
+}
+
+@media (max-width: 640px) {
+  .landing-page__inner {
+    padding: 7.5rem 6% 5rem;
+  }
+}

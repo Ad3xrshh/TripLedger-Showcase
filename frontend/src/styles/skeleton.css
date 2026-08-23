@@ -1,0 +1,75 @@
+/*
+  Shared loading/skeleton primitives.
+
+  Deliberately restrained: a slow, static opacity pulse rather than a
+  moving shimmer sweep - "quietly preparing the ledger" rather than a
+  generic SaaS loading shimmer. Respects prefers-reduced-motion via the
+  global rule in global.css (which forces near-zero animation duration on
+  everything), so no separate override is needed here.
+
+  Usage: build a skeleton out of shapes sized to approximate the real
+  content that will replace it, so nothing jumps when data arrives.
+    <div className="skeleton skeleton--text" style={{ width: '70%' }} />
+    <div className="skeleton skeleton--title" style={{ width: '40%' }} />
+    <div className="skeleton skeleton--avatar" />
+    <div className="skeleton skeleton--card" />
+*/
+
+@keyframes skeleton-pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.skeleton {
+  background: var(--color-border);
+  border-radius: var(--radius-sm);
+  animation: skeleton-pulse 1.6s ease-in-out infinite;
+}
+
+/* A line of body text. */
+.skeleton--text {
+  height: 0.85em;
+  width: 100%;
+}
+
+/* A heading-weight line - taller, slightly more rounded. */
+.skeleton--title {
+  height: 1.1em;
+  width: 50%;
+}
+
+/* A circular avatar/icon placeholder. */
+.skeleton--avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* A whole card-shaped block, e.g. standing in for a TripCard/ExpenseCard
+   before the list arrives - matches the shared .card's rounded corners so
+   the placeholder reads as "a card that hasn't loaded" rather than a
+   generic gray box. */
+.skeleton--card {
+  height: 96px;
+  border-radius: var(--radius-md);
+}
+
+/* A single line-item row (member row, expense row, notification row). */
+.skeleton--row {
+  height: 1em;
+  width: 100%;
+}
+
+/* Vertical rhythm for a stack of skeleton lines standing in for a
+   paragraph or list. */
+.skeleton-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
