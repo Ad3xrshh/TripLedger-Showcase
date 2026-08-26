@@ -146,6 +146,98 @@
   font-size: var(--fs-sm);
 }
 
+.trip-members-page__current-info {
+  font-size: var(--fs-sm);
+  margin-bottom: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  background-color: var(--color-surface-subtle, rgba(255, 255, 255, 0.04));
+  border-radius: var(--radius-md, 6px);
+  border: 1px solid var(--color-border);
+}
+
+.trip-members-page__subtext {
+  font-size: var(--fs-xs);
+  color: var(--color-text-muted);
+  margin: 0 0 var(--space-2) 0;
+}
+
+.trip-members-page__pending-notice {
+  margin-top: var(--space-3);
+  padding: var(--space-3);
+  background-color: var(--color-surface-subtle, rgba(255, 255, 255, 0.04));
+  border-radius: var(--radius-md, 6px);
+  border: 1px solid var(--color-amber, #eab308);
+}
+
+.trip-members-page__pending-tag {
+  display: inline-block;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--color-amber, #eab308);
+  border: 1px solid var(--color-amber, #eab308);
+  border-radius: 999px;
+  padding: 0 var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.trip-members-page__pending-route {
+  font-size: var(--fs-sm);
+  margin: 0 0 var(--space-2) 0;
+}
+
+.trip-members-page__request-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.trip-members-page__request-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md, 6px);
+}
+
+.trip-members-page__request-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.trip-members-page__request-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.trip-members-page__request-member {
+  font-weight: 600;
+  font-size: var(--fs-sm);
+}
+
+.trip-members-page__request-transfer {
+  font-size: var(--fs-xs);
+  color: var(--color-text-muted);
+}
+
+.trip-members-page__request-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.trip-members-page__request-note {
+  font-size: var(--fs-xs);
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
 @keyframes trip-members-rise {
   from {
     opacity: 0;

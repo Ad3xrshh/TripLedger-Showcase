@@ -24,6 +24,17 @@
   color: var(--color-ink);
 }
 
+.expenses-page__breadcrumb-separator {
+  margin: 0 var(--space-2);
+  color: var(--color-text-muted);
+}
+
+.expenses-page__breadcrumb-trip {
+  text-transform: uppercase;
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.03em;
+}
+
 .expenses-page__hero {
   display: flex;
   align-items: flex-start;

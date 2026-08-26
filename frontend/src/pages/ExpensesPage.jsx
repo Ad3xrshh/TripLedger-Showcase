@@ -71,16 +71,11 @@ export function ExpensesPage() {
   return (
     <div className="expenses-page">
       <Link to={`/trips/${tripId}`} className="expenses-page__back-link">
-        &larr; {trip?.name || 'Trip'}
+        Expenses <span className="expenses-page__breadcrumb-separator" aria-hidden="true">/</span> <span className="expenses-page__breadcrumb-trip">{trip?.name || 'Trip'}</span>
       </Link>
 
       <div className="expenses-page__hero">
         <div className="expenses-page__heading">
-          {trip?.name && (
-            <p className="eyebrow expenses-page__eyebrow" aria-hidden="true">
-              {trip.name}
-            </p>
-          )}
           <h1 className="expenses-page__title">Expenses</h1>
           {expenses && (
             <p className="expenses-page__subtitle">

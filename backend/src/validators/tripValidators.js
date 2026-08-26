@@ -78,6 +78,16 @@ export const updateMySettlementUnitSchema = z.object({
   settlementUnitId: z.string().uuid('settlementUnitId must be a valid UUID'),
 });
 
+export const requestTransferSchema = z
+  .object({
+    targetUnitId: z.string().uuid('targetUnitId must be a valid UUID').optional(),
+    settlementUnitId: z.string().uuid('settlementUnitId must be a valid UUID').optional(),
+  })
+  .refine((data) => data.targetUnitId || data.settlementUnitId, {
+    message: 'targetUnitId or settlementUnitId is required',
+    path: ['targetUnitId'],
+  });
+
 // 9.9.9 QA fix #5: deleting a trip requires the owner's current password
 // as an in-band confirmation step (see TripService.deleteTrip) - not just
 // a UI dialog, since a frontend-only confirmation is not sufficient

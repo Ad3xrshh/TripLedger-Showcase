@@ -46,12 +46,36 @@ export async function createSettlementUnit(tripId, displayName) {
   return data.settlementUnit;
 }
 
-// PATCH /api/trips/:tripId/members/me/settlement-unit  { settlementUnitId } -> membership
+// PATCH /api/trips/:tripId/members/me/settlement-unit  { settlementUnitId } -> { transferRequest }
 export async function updateMySettlementUnit(tripId, settlementUnitId) {
   const { data } = await apiClient.patch(`/trips/${tripId}/members/me/settlement-unit`, {
     settlementUnitId,
   });
-  return data.membership;
+  return data;
+}
+
+// POST /api/trips/:tripId/transfer-requests { targetUnitId } -> { transferRequest }
+export async function requestTransfer(tripId, targetUnitId) {
+  const { data } = await apiClient.post(`/trips/${tripId}/transfer-requests`, { targetUnitId });
+  return data.transferRequest;
+}
+
+// GET /api/trips/:tripId/transfer-requests -> transferRequests[]
+export async function listTransferRequests(tripId) {
+  const { data } = await apiClient.get(`/trips/${tripId}/transfer-requests`);
+  return data.transferRequests;
+}
+
+// POST /api/trips/:tripId/transfer-requests/:requestId/approve -> { transferRequest, membership }
+export async function approveTransferRequest(tripId, requestId) {
+  const { data } = await apiClient.post(`/trips/${tripId}/transfer-requests/${requestId}/approve`);
+  return data;
+}
+
+// POST /api/trips/:tripId/transfer-requests/:requestId/reject -> { transferRequest }
+export async function rejectTransferRequest(tripId, requestId) {
+  const { data } = await apiClient.post(`/trips/${tripId}/transfer-requests/${requestId}/reject`);
+  return data;
 }
 
 // DELETE /api/trips/:tripId  { password } -> 204 No Content

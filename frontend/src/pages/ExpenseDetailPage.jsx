@@ -175,14 +175,8 @@ export function ExpenseDetailPage() {
   return (
     <div className="expense-detail-page">
       <Link to={`/trips/${tripId}/expenses`} className="expense-detail-page__back-link">
-        &larr; Expenses
+        &larr; Expenses <span className="expense-detail-page__breadcrumb-separator" aria-hidden="true">/</span> <span className="expense-detail-page__breadcrumb-trip">{trip?.name || 'Trip'}</span>
       </Link>
-
-      {trip?.name && (
-        <p className="eyebrow expense-detail-page__eyebrow" aria-hidden="true">
-          {trip.name}
-        </p>
-      )}
 
       <div className="expense-detail-page__header">
         <h1 className="expense-detail-page__description">{expense.description}</h1>

@@ -6,6 +6,7 @@ import * as tripRepository from '../repositories/tripRepository.js';
 import * as settlementUnitRepository from '../repositories/settlementUnitRepository.js';
 import * as tripMemberRepository from '../repositories/tripMemberRepository.js';
 import * as userRepository from '../repositories/userRepository.js';
+import * as transferRequestRepository from '../repositories/transferRequestRepository.js';
 import * as HistoryService from './HistoryService.js';
 import * as NotificationService from './NotificationService.js';
 import { assertLedgerIsMutable } from './tripClosure/closureRules.js';
@@ -136,7 +137,8 @@ export async function getTripDetail(tripId) {
   }
   const members = await tripMemberRepository.listMembersForTrip(pool, tripId);
   const settlementUnits = await settlementUnitRepository.listVisibleUnitsForTrip(pool, tripId);
-  return { trip, members, settlementUnits };
+  const transferRequests = await transferRequestRepository.listRequestsForTrip(pool, tripId);
+  return { trip, members, settlementUnits, transferRequests };
 }
 
 export async function listMembers(tripId) {
@@ -164,16 +166,8 @@ export async function createGroupUnit(tripId, displayName) {
   }
 }
 
-// tripMember here is the CURRENT user's own membership row (req.tripMember,
-// attached by requireTripMembership) - this function only ever moves the
-// caller themselves, never another member.
-export async function moveSelfToSettlementUnit(tripMember, targetUnitId) {
-  // 9.9.9 Batch 1 issues #1/#2/#4: moving between settlement units changes
-  // future settlement structure, so it's frozen during closure exactly
-  // like every other ledger-affecting mutation. This is safe to keep
-  // flexible while the trip is active precisely because issue #3's
-  // payer-unit snapshot means a move no longer rewrites the attribution of
-  // that member's past expenses.
+// Issue #6: Requesting a transfer creates a pending request rather than immediately moving the member.
+export async function requestTransfer(tripMember, targetUnitId) {
   const trip = await tripRepository.findTripById(pool, tripMember.tripId);
   if (!trip) {
     throw new AppError('Trip not found', 404, 'TRIP_NOT_FOUND');
@@ -181,16 +175,10 @@ export async function moveSelfToSettlementUnit(tripMember, targetUnitId) {
   assertLedgerIsMutable(trip, 'move between settlement units');
 
   const targetUnit = await settlementUnitRepository.findUnitById(pool, targetUnitId);
-
   if (!targetUnit || targetUnit.trip_id !== tripMember.tripId) {
     throw new AppError('Settlement unit not found in this trip', 404, 'SETTLEMENT_UNIT_NOT_FOUND');
   }
 
-  // 9.9.9 QA fix #7: an archived group (see deleteOrArchiveSettlementUnit
-  // below) is kept around only to preserve its historical references -
-  // it must not silently gain a new active member, which would
-  // contradict the "0 active members" invariant that made it eligible
-  // for archiving in the first place.
   if (targetUnit.archived_at) {
     throw new AppError('This settlement unit has been deleted and can no longer be joined', 410, 'SETTLEMENT_UNIT_ARCHIVED');
   }
@@ -199,7 +187,177 @@ export async function moveSelfToSettlementUnit(tripMember, targetUnitId) {
     throw new AppError('You can only move into a group settlement unit', 400, 'NOT_A_GROUP_UNIT');
   }
 
-  return tripMemberRepository.updateMemberSettlementUnit(pool, tripMember.id, targetUnit.id);
+  const currentUnitId = tripMember.settlementUnitId || tripMember.settlement_unit_id;
+
+  if (targetUnit.id === currentUnitId) {
+    throw new AppError('You are already in this settlement unit', 400, 'ALREADY_IN_THIS_GROUP');
+  }
+
+  if (tripMember.role === 'owner') {
+    const updatedMembership = await tripMemberRepository.updateMemberSettlementUnit(
+      pool,
+      tripMember.id,
+      targetUnit.id
+    );
+    return { membership: updatedMembership };
+  }
+
+  const existingPending = await transferRequestRepository.findPendingRequestForMember(
+    pool,
+    tripMember.tripId,
+    tripMember.id
+  );
+  if (existingPending) {
+    throw new AppError(
+      'You already have a pending transfer request for this trip',
+      409,
+      'TRANSFER_REQUEST_PENDING'
+    );
+  }
+
+  return withTransaction(async (client) => {
+    const transferRequest = await transferRequestRepository.insertTransferRequest(client, {
+      tripId: tripMember.tripId,
+      memberId: tripMember.id,
+      fromUnitId: currentUnitId,
+      toUnitId: targetUnit.id,
+    });
+
+    const owner = await tripMemberRepository.findOwnerMembership(client, tripMember.tripId);
+    if (owner && owner.id !== tripMember.id) {
+      const user = await userRepository.findById(tripMember.userId);
+      await NotificationService.notifyUser(client, {
+        userId: owner.user_id,
+        tripId: tripMember.tripId,
+        type: NotificationService.NOTIFICATION_TYPES.TRANSFER_REQUEST_CREATED,
+        message: `${user ? user.display_name : 'A member'} requested to move to "${targetUnit.display_name}".`,
+      });
+    }
+
+    return { transferRequest };
+  });
+}
+
+export async function moveSelfToSettlementUnit(tripMember, targetUnitId) {
+  return requestTransfer(tripMember, targetUnitId);
+}
+
+export async function listTransferRequests(tripId) {
+  return transferRequestRepository.listRequestsForTrip(pool, tripId);
+}
+
+export async function approveTransferRequest(tripMember, requestId) {
+  if (tripMember.role !== 'owner') {
+    throw new AppError('Only the trip owner can approve transfer requests', 403, 'FORBIDDEN');
+  }
+
+  const trip = await tripRepository.findTripById(pool, tripMember.tripId);
+  if (!trip) {
+    throw new AppError('Trip not found', 404, 'TRIP_NOT_FOUND');
+  }
+  assertLedgerIsMutable(trip, 'approve settlement group transfer');
+
+  const request = await transferRequestRepository.findRequestById(pool, requestId);
+  if (!request || request.trip_id !== tripMember.tripId) {
+    throw new AppError('Transfer request not found', 404, 'TRANSFER_REQUEST_NOT_FOUND');
+  }
+
+  if (request.status !== 'pending') {
+    throw new AppError('This transfer request has already been processed', 409, 'REQUEST_ALREADY_PROCESSED');
+  }
+
+  if (request.member_id === tripMember.id) {
+    throw new AppError('A member cannot approve their own transfer request', 403, 'CANNOT_SELF_APPROVE');
+  }
+
+  const targetUnit = await settlementUnitRepository.findUnitById(pool, request.to_unit_id);
+  if (!targetUnit || targetUnit.trip_id !== tripMember.tripId) {
+    throw new AppError('Settlement unit not found in this trip', 404, 'SETTLEMENT_UNIT_NOT_FOUND');
+  }
+
+  if (targetUnit.archived_at) {
+    throw new AppError('The target settlement unit has been archived', 410, 'SETTLEMENT_UNIT_ARCHIVED');
+  }
+
+  return withTransaction(async (client) => {
+    const reqRow = await transferRequestRepository.findRequestByIdForUpdate(client, requestId);
+    if (!reqRow || reqRow.status !== 'pending') {
+      throw new AppError('This transfer request has already been processed', 409, 'REQUEST_ALREADY_PROCESSED');
+    }
+
+    const updatedMembership = await tripMemberRepository.updateMemberSettlementUnit(
+      client,
+      request.member_id,
+      request.to_unit_id
+    );
+
+    const updatedRequest = await transferRequestRepository.updateRequestStatus(client, requestId, {
+      status: 'approved',
+      reviewedByMemberId: tripMember.id,
+    });
+
+    const targetMember = await tripMemberRepository.findMemberById(client, request.member_id);
+    if (targetMember) {
+      await NotificationService.notifyUser(client, {
+        userId: targetMember.user_id,
+        tripId: tripMember.tripId,
+        type: NotificationService.NOTIFICATION_TYPES.TRANSFER_REQUEST_APPROVED,
+        message: `Your transfer request to "${targetUnit.display_name}" was approved.`,
+      });
+    }
+
+    return { transferRequest: updatedRequest, membership: updatedMembership };
+  });
+}
+
+export async function rejectTransferRequest(tripMember, requestId) {
+  if (tripMember.role !== 'owner') {
+    throw new AppError('Only the trip owner can reject transfer requests', 403, 'FORBIDDEN');
+  }
+
+  const trip = await tripRepository.findTripById(pool, tripMember.tripId);
+  if (!trip) {
+    throw new AppError('Trip not found', 404, 'TRIP_NOT_FOUND');
+  }
+  assertLedgerIsMutable(trip, 'reject settlement group transfer');
+
+  const request = await transferRequestRepository.findRequestById(pool, requestId);
+  if (!request || request.trip_id !== tripMember.tripId) {
+    throw new AppError('Transfer request not found', 404, 'TRANSFER_REQUEST_NOT_FOUND');
+  }
+
+  if (request.status !== 'pending') {
+    throw new AppError('This transfer request has already been processed', 409, 'REQUEST_ALREADY_PROCESSED');
+  }
+
+  if (request.member_id === tripMember.id) {
+    throw new AppError('A member cannot approve or reject their own transfer request', 403, 'CANNOT_SELF_APPROVE');
+  }
+
+  return withTransaction(async (client) => {
+    const reqRow = await transferRequestRepository.findRequestByIdForUpdate(client, requestId);
+    if (!reqRow || reqRow.status !== 'pending') {
+      throw new AppError('This transfer request has already been processed', 409, 'REQUEST_ALREADY_PROCESSED');
+    }
+
+    const updatedRequest = await transferRequestRepository.updateRequestStatus(client, requestId, {
+      status: 'rejected',
+      reviewedByMemberId: tripMember.id,
+    });
+
+    const targetMember = await tripMemberRepository.findMemberById(client, request.member_id);
+    if (targetMember) {
+      const targetUnit = await settlementUnitRepository.findUnitById(client, request.to_unit_id);
+      await NotificationService.notifyUser(client, {
+        userId: targetMember.user_id,
+        tripId: tripMember.tripId,
+        type: NotificationService.NOTIFICATION_TYPES.TRANSFER_REQUEST_REJECTED,
+        message: `Your transfer request to "${targetUnit ? targetUnit.display_name : 'group'}" was rejected.`,
+      });
+    }
+
+    return { transferRequest: updatedRequest };
+  });
 }
 
 // 9.9.9 QA fix #5: destructive, owner-only, password-gated trip deletion.

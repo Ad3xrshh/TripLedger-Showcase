@@ -30,12 +30,12 @@ export function TripMembersPage() {
   const [moveError, setMoveError] = useState(null);
   const [isMoving, setIsMoving] = useState(false);
 
-  // 9.9.9 QA fix #7: which unit's delete confirmation is currently open,
-  // if any - only one at a time, mirroring TripCard's single-dialog
-  // pattern for delete-trip (see TripCard.jsx).
   const [unitPendingDelete, setUnitPendingDelete] = useState(null);
   const [deleteUnitError, setDeleteUnitError] = useState(null);
   const [isDeletingUnit, setIsDeletingUnit] = useState(false);
+
+  const [processingRequestId, setProcessingRequestId] = useState(null);
+  const [requestError, setRequestError] = useState(null);
 
   function loadDetail() {
     tripsApi
@@ -101,16 +101,16 @@ export function TripMembersPage() {
     );
   }
 
-  const { trip, members, settlementUnits } = detail;
+  const { trip, members, settlementUnits, transferRequests = [] } = detail;
   const myMembership = members.find((m) => m.user_id === user?.id);
   const groupUnits = settlementUnits.filter((u) => u.kind === 'group');
   const moveOptions = groupUnits.filter((u) => u.id !== myMembership?.settlement_unit_id);
-  // Pass 2.8: mirrors the closed-trip convention already used on
-  // TripDetailPage/ExpensesPage/ApprovalRulesPanel (trip.status ===
-  // 'closed') - the backend already rejects settlement-unit mutations on
-  // a closed trip (409 TRIP_ALREADY_CLOSED), this just keeps the UI from
-  // presenting controls that would only fail on submit.
   const isTripClosed = trip.status === 'closed';
+
+  const myPendingRequest = transferRequests.find(
+    (r) => r.member_id === myMembership?.id && r.status === 'pending'
+  );
+  const pendingOwnerRequests = transferRequests.filter((r) => r.status === 'pending');
 
   function unitMemberCount(unitId) {
     return members.filter((m) => m.settlement_unit_id === unitId).length;
@@ -118,11 +118,6 @@ export function TripMembersPage() {
 
   async function handleCreateUnit(event) {
     event.preventDefault();
-    // Defense in depth: the form itself is hidden once the trip is closed
-    // (see the closed branch in the JSX below), but the handler also
-    // refuses to fire - matches the backend, which rejects settlement-unit
-    // mutations on a closed trip with 409 TRIP_ALREADY_CLOSED regardless
-    // of what the client sends.
     if (isCreatingUnit || detail.trip.status === 'closed') return;
 
     setCreateUnitError(null);
@@ -144,14 +139,18 @@ export function TripMembersPage() {
 
   async function handleMove(event) {
     event.preventDefault();
-    // Same defense-in-depth as handleCreateUnit above.
     if (isMoving || !selectedUnitId || detail.trip.status === 'closed') return;
 
     setMoveError(null);
     setIsMoving(true);
     try {
-      await tripsApi.updateMySettlementUnit(tripId, selectedUnitId);
+      const result = await tripsApi.updateMySettlementUnit(tripId, selectedUnitId);
       setSelectedUnitId('');
+      if (result?.membership) {
+        toast.success('Moved to new settlement group.');
+      } else {
+        toast.success('Transfer request submitted and pending owner approval.');
+      }
       loadDetail();
     } catch (err) {
       if (err.code === 'UNAUTHENTICATED') {
@@ -161,6 +160,44 @@ export function TripMembersPage() {
       setMoveError(humanizeErrorMessage(err));
     } finally {
       setIsMoving(false);
+    }
+  }
+
+  async function handleApproveTransfer(requestId) {
+    if (processingRequestId) return;
+    setRequestError(null);
+    setProcessingRequestId(requestId);
+    try {
+      await tripsApi.approveTransferRequest(tripId, requestId);
+      toast.success('Transfer request approved.');
+      loadDetail();
+    } catch (err) {
+      if (err.code === 'UNAUTHENTICATED') {
+        logout();
+        return;
+      }
+      setRequestError(humanizeErrorMessage(err));
+    } finally {
+      setProcessingRequestId(null);
+    }
+  }
+
+  async function handleRejectTransfer(requestId) {
+    if (processingRequestId) return;
+    setRequestError(null);
+    setProcessingRequestId(requestId);
+    try {
+      await tripsApi.rejectTransferRequest(tripId, requestId);
+      toast.success('Transfer request rejected.');
+      loadDetail();
+    } catch (err) {
+      if (err.code === 'UNAUTHENTICATED') {
+        logout();
+        return;
+      }
+      setRequestError(humanizeErrorMessage(err));
+    } finally {
+      setProcessingRequestId(null);
     }
   }
 
@@ -220,17 +257,69 @@ export function TripMembersPage() {
         </ul>
       </section>
 
+      {/* Owner Transfer Approval Panel */}
+      {!isTripClosed && myMembership?.role === 'owner' && (
+        <section className="card card--lg trip-members-page__section">
+          <h2 className="trip-members-page__section-title">Pending transfer requests ({pendingOwnerRequests.length})</h2>
+          {requestError && (
+            <p className="trip-members-page__error" role="alert">
+              {requestError}
+            </p>
+          )}
+          {pendingOwnerRequests.length === 0 ? (
+            <p className="trip-members-page__subtext">No pending group transfer requests.</p>
+          ) : (
+            <ul className="trip-members-page__request-list">
+              {pendingOwnerRequests.map((req) => {
+                const isSelf = req.member_id === myMembership.id;
+                return (
+                  <li key={req.id} className="trip-members-page__request-item">
+                    <div className="trip-members-page__request-main">
+                      <div className="trip-members-page__request-header">
+                        <span className="trip-members-page__request-member">{req.member_name}</span>
+                        <span className="trip-members-page__pending-tag">Pending approval</span>
+                      </div>
+                      <div className="trip-members-page__request-transfer">
+                        Current: <strong>{req.from_unit_name}</strong> → Requested: <strong>{req.to_unit_name}</strong>
+                      </div>
+                    </div>
+                    <div className="trip-members-page__request-actions">
+                      {isSelf ? (
+                        <span className="trip-members-page__request-note">Cannot approve own request</span>
+                      ) : (
+                        <>
+                          <Button
+                            type="button"
+                            variant="primary"
+                            disabled={Boolean(processingRequestId)}
+                            isLoading={processingRequestId === req.id}
+                            onClick={() => handleApproveTransfer(req.id)}
+                          >
+                            Approve
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="secondary"
+                            disabled={Boolean(processingRequestId)}
+                            onClick={() => handleRejectTransfer(req.id)}
+                          >
+                            Reject
+                          </Button>
+                        </>
+                      )}
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </section>
+      )}
+
       <section className="card card--lg trip-members-page__section">
         <h2 className="trip-members-page__section-title">Settlement units ({settlementUnits.length})</h2>
         <ul className="trip-members-page__unit-list">
           {settlementUnits.map((unit) => {
-            // 9.9.9 QA fix #7: deleting a group is only ever offered when
-            // it's actually eligible - the backend independently
-            // re-checks the same two conditions (owner, 0 active
-            // members) regardless of what this button's visibility
-            // implies, but showing it only here avoids a guaranteed-to-
-            // fail click. Individual units are never deletable at all
-            // (see TripService.deleteOrArchiveSettlementUnit).
             const canDelete =
               !isTripClosed &&
               myMembership?.role === 'owner' &&
@@ -306,14 +395,24 @@ export function TripMembersPage() {
         )}
       </section>
 
-      {/* Pass 2.8: once the trip is closed, settlement units can't be
-          mutated at all (see isTripClosed above) - this whole section is
-          a mutation action with no read-only counterpart worth showing,
-          so it's hidden rather than shown disabled. */}
       {!isTripClosed && myMembership && groupUnits.length > 0 && (
         <section className="card card--lg trip-members-page__section">
-          <h2 className="trip-members-page__section-title">Move yourself into a group</h2>
-          {moveOptions.length === 0 ? (
+          <h2 className="trip-members-page__section-title">Move to another group</h2>
+          <div className="trip-members-page__current-info">
+            <span>Current group: <strong>{myMembership.settlement_unit_name}</strong></span>
+          </div>
+
+          {myPendingRequest ? (
+            <div className="trip-members-page__pending-notice">
+              <span className="trip-members-page__pending-tag">Transfer request pending</span>
+              <p className="trip-members-page__pending-route">
+                From: <strong>{myPendingRequest.from_unit_name}</strong> → To: <strong>{myPendingRequest.to_unit_name}</strong>
+              </p>
+              <p className="trip-members-page__subtext">
+                Your transfer request requires trip owner approval. You cannot submit multiple conflicting transfer requests.
+              </p>
+            </div>
+          ) : moveOptions.length === 0 ? (
             <EmptyState
               compact
               tone="positive"
@@ -322,6 +421,11 @@ export function TripMembersPage() {
             />
           ) : (
             <form className="trip-members-page__inline-form" onSubmit={handleMove}>
+              <p className="trip-members-page__subtext">
+                {myMembership?.role === 'owner'
+                  ? 'Move directly into another group settlement unit.'
+                  : 'Moving between settlement groups requires approval from the trip owner.'}
+              </p>
               <SelectField
                 id="targetUnit"
                 label="Group settlement unit"
@@ -335,7 +439,7 @@ export function TripMembersPage() {
                 </p>
               )}
               <Button type="submit" variant="secondary" disabled={isMoving || !selectedUnitId} isLoading={isMoving}>
-                {isMoving ? 'Moving…' : 'Move me into this group'}
+                {isMoving ? 'Moving…' : myMembership?.role === 'owner' ? 'Move group' : 'Request move'}
               </Button>
             </form>
           )}

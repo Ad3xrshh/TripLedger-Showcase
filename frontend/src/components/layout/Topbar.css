@@ -47,6 +47,28 @@
   border-color: var(--color-text-muted);
 }
 
+.topbar__avatar {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-brand-teal);
+  color: var(--color-ink);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: box-shadow var(--motion-fast), transform var(--motion-fast);
+}
+
+.topbar__avatar:hover {
+  box-shadow: 0 0 0 2px var(--color-border-strong);
+}
+
 @media (min-width: 720px) {
   .topbar__help {
     display: none;

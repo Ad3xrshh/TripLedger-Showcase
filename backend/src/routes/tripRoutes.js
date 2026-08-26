@@ -8,6 +8,7 @@ import {
   joinTripSchema,
   createSettlementUnitSchema,
   updateMySettlementUnitSchema,
+  requestTransferSchema,
   deleteTripSchema,
 } from '../validators/tripValidators.js';
 
@@ -32,8 +33,33 @@ router.post(
 router.patch(
   '/:tripId/members/me/settlement-unit',
   requireTripMembership,
-  validate(updateMySettlementUnitSchema),
+  validate(requestTransferSchema),
   tripController.updateMySettlementUnit
+);
+
+router.post(
+  '/:tripId/transfer-requests',
+  requireTripMembership,
+  validate(requestTransferSchema),
+  tripController.createTransferRequest
+);
+
+router.get(
+  '/:tripId/transfer-requests',
+  requireTripMembership,
+  tripController.listTransferRequests
+);
+
+router.post(
+  '/:tripId/transfer-requests/:requestId/approve',
+  requireTripMembership,
+  tripController.approveTransferRequest
+);
+
+router.post(
+  '/:tripId/transfer-requests/:requestId/reject',
+  requireTripMembership,
+  tripController.rejectTransferRequest
 );
 
 // 9.9.9 QA fix #5: owner-only, password-gated. requireTripMembership

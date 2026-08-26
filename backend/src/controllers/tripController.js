@@ -56,8 +56,46 @@ export async function createSettlementUnit(req, res, next) {
 
 export async function updateMySettlementUnit(req, res, next) {
   try {
-    const membership = await TripService.moveSelfToSettlementUnit(req.tripMember, req.body.settlementUnitId);
-    res.status(200).json({ membership });
+    const targetUnitId = req.body.targetUnitId || req.body.settlementUnitId;
+    const result = await TripService.moveSelfToSettlementUnit(req.tripMember, targetUnitId);
+    res.status(200).json(result);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function createTransferRequest(req, res, next) {
+  try {
+    const targetUnitId = req.body.targetUnitId || req.body.settlementUnitId;
+    const result = await TripService.requestTransfer(req.tripMember, targetUnitId);
+    res.status(201).json(result);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function listTransferRequests(req, res, next) {
+  try {
+    const transferRequests = await TripService.listTransferRequests(req.tripMember.tripId);
+    res.status(200).json({ transferRequests });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function approveTransferRequest(req, res, next) {
+  try {
+    const result = await TripService.approveTransferRequest(req.tripMember, req.params.requestId);
+    res.status(200).json(result);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function rejectTransferRequest(req, res, next) {
+  try {
+    const result = await TripService.rejectTransferRequest(req.tripMember, req.params.requestId);
+    res.status(200).json(result);
   } catch (err) {
     next(err);
   }

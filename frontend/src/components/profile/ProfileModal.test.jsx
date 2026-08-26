@@ -39,4 +39,17 @@ describe('ProfileModal', () => {
     render(<ProfileModal open onClose={vi.fn()} user={{ id: 'u2', email: 'noname@example.com' }} />);
     expect(screen.getByText('noname@example.com')).toBeInTheDocument();
   });
+
+  it('supports display_name property from database API response and displays uppercase initial', () => {
+    render(
+      <ProfileModal
+        open
+        onClose={vi.fn()}
+        user={{ id: 'u3', display_name: 'rahul test', email: 'rahul@example.com' }}
+      />
+    );
+    expect(screen.getByText('rahul test')).toBeInTheDocument();
+    expect(screen.getByText('rahul@example.com')).toBeInTheDocument();
+    expect(screen.getByText('R')).toBeInTheDocument();
+  });
 });

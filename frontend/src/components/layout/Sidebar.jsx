@@ -68,6 +68,9 @@ export function Sidebar() {
     navigate('/');
   }
 
+  const displayName = user?.displayName || user?.display_name;
+  const initial = displayName?.trim() ? displayName.trim().charAt(0).toUpperCase() : '?';
+
   return (
     <aside className="sidebar">
       {/* Pass 2.2: the decorative icon-only TripLedgerMark that used to
@@ -135,9 +138,9 @@ export function Sidebar() {
             aria-label="View your profile"
             title="View your profile"
           >
-            {user.displayName?.charAt(0).toUpperCase() || '?'}
+            {initial}
           </button>
-          <span className="sidebar__account-name">{user.displayName}</span>
+          <span className="sidebar__account-name">{displayName}</span>
           <button
             type="button"
             className="sidebar__account-logout"

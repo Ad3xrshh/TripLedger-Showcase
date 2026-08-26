@@ -25,14 +25,15 @@
   color: var(--color-ink);
 }
 
-/* Scoped override, not a change to the shared .eyebrow class (which is
-   inline-block by design for contexts where it sits beside other inline
-   content) - here it needs to occupy its own row below the back link
-   rather than flow onto the same line as it, which is what was producing
-   "← ExpensesGOA TEST TRIP PHASE 5" as one run of text. */
-.expense-detail-page__eyebrow {
-  display: block;
-  margin: 0;
+.expense-detail-page__breadcrumb-separator {
+  margin: 0 var(--space-2);
+  color: var(--color-text-muted);
+}
+
+.expense-detail-page__breadcrumb-trip {
+  text-transform: uppercase;
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.03em;
 }
 
 .expense-detail-page__header {

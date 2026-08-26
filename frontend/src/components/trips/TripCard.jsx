@@ -34,7 +34,7 @@ export function TripCard({ trip, onDeleted }) {
   const budgetAmount = isUnlimited
     ? 'Unlimited'
     : (formatMoneyMinor(trip.budget_amount_minor, trip.currency) ?? '\u2014');
-  const budgetCaption = isUnlimited ? null : formatBudgetType(trip.budget_type);
+  const budgetCaption = isUnlimited ? 'Unlimited budget' : formatBudgetType(trip.budget_type);
 
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [password, setPassword] = useState('');

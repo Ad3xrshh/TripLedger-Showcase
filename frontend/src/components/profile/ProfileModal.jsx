@@ -98,7 +98,8 @@ export function ProfileModal({ open, onClose, user }) {
     }
   }
 
-  const initial = user?.displayName?.trim()?.charAt(0)?.toUpperCase() || '?';
+  const displayName = user?.displayName || user?.display_name;
+  const initial = displayName?.trim() ? displayName.trim().charAt(0).toUpperCase() : '?';
 
   return createPortal(
     <div className="profile-modal-backdrop" onMouseDown={handleBackdropMouseDown}>
@@ -132,7 +133,7 @@ export function ProfileModal({ open, onClose, user }) {
           <div className="profile-modal__fields">
             <div className="profile-modal__field">
               <span className="eyebrow profile-modal__field-label">Display name</span>
-              <span className="profile-modal__field-value">{user?.displayName || '\u2014'}</span>
+              <span className="profile-modal__field-value">{displayName || '\u2014'}</span>
             </div>
             <div className="profile-modal__field">
               <span className="eyebrow profile-modal__field-label">Email address</span>

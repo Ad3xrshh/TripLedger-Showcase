@@ -7,6 +7,7 @@
 .trip-card {
   display: flex;
   flex-direction: column;
+  flex: 1;
 }
 
 .trip-card__top {
@@ -66,6 +67,9 @@
    rules above (display:flex etc, still targeted directly by trip.card). */
 .trip-card-wrapper {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .trip-card__delete {
@@ -88,7 +92,8 @@
 }
 
 .trip-card__footer {
-  margin-top: var(--space-4);
+  margin-top: auto;
+  padding-top: var(--space-4);
   display: flex;
   align-items: center;
   justify-content: space-between;

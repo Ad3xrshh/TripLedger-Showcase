@@ -10,6 +10,7 @@ import tripRoutes from '../../src/routes/tripRoutes.js';
 import expenseRoutes from '../../src/routes/expenseRoutes.js';
 import settlementRoutes from '../../src/routes/settlementRoutes.js';
 import { errorHandler } from '../../src/middleware/errorHandler.js';
+import jwt from 'jsonwebtoken';
 
 let server;
 let baseUrl;
@@ -89,7 +90,35 @@ async function moveIntoUnit(token, tripId, settlementUnitId) {
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
     body: JSON.stringify({ settlementUnitId }),
   });
-  return res.json();
+  const data = await res.json();
+  if (res.status === 200 && data.transferRequest) {
+    const ownerRes = await pool.query(
+      `SELECT user_id FROM trip_members WHERE trip_id = $1 AND role = 'owner'`,
+      [tripId]
+    );
+    const ownerUserId = ownerRes.rows[0]?.user_id;
+    const decodedToken = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    const userId = decodedToken.sub || decodedToken.id;
+
+    if (ownerUserId && ownerUserId !== userId) {
+      const ownerToken = jwt.sign({ sub: ownerUserId }, process.env.JWT_SECRET || 'tripledger_super_secret_key_2026_change_this_later');
+      await fetch(`${baseUrl}/api/trips/${tripId}/transfer-requests/${data.transferRequest.id}/approve`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${ownerToken}` },
+      });
+    } else {
+      await pool.query(
+        `UPDATE settlement_transfer_requests SET status = 'approved', reviewed_at = NOW() WHERE id = $1`,
+        [data.transferRequest.id]
+      );
+      await pool.query(
+        `UPDATE trip_members SET settlement_unit_id = $1 WHERE trip_id = $2 AND user_id = $3`,
+        [settlementUnitId, tripId, userId]
+      );
+    }
+  }
+  const membership = { settlement_unit_id: settlementUnitId };
+  return { status: res.status, data: { ...data, membership }, membership };
 }
 
 async function createExpense(token, tripId, expenseOverrides = {}) {

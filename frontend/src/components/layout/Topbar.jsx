@@ -4,6 +4,7 @@ import { useAuth } from '../../hooks/useAuth.js';
 import { TripLedgerMark } from '../ui/TripLedgerMark.jsx';
 import { Button } from '../ui/Button.jsx';
 import { HelpModal } from '../help/HelpModal.jsx';
+import { ProfileModal } from '../profile/ProfileModal.jsx';
 import './Topbar.css';
 
 function HelpIcon() {
@@ -26,11 +27,15 @@ export function Topbar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [isHelpOpen, setIsHelpOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   function handleLogout() {
     logout();
     navigate('/');
   }
+
+  const displayName = user?.displayName || user?.display_name;
+  const initial = displayName?.trim() ? displayName.trim().charAt(0).toUpperCase() : '?';
 
   return (
     <header className="topbar">
@@ -58,13 +63,23 @@ export function Topbar() {
           >
             <HelpIcon />
           </button>
-          <span className="topbar__user-name">{user.displayName}</span>
+          <button
+            type="button"
+            className="topbar__avatar"
+            onClick={() => setIsProfileOpen(true)}
+            aria-label="View your profile"
+            title="View your profile"
+          >
+            {initial}
+          </button>
+          <span className="topbar__user-name">{displayName}</span>
           <Button variant="secondary" size="sm" className="topbar__logout" onClick={handleLogout}>
             Log out
           </Button>
         </div>
       )}
       <HelpModal open={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
+      <ProfileModal open={isProfileOpen} onClose={() => setIsProfileOpen(false)} user={user} />
     </header>
   );
 }

@@ -309,7 +309,7 @@ test('POST /api/trips/:tripId/settlement-units rejects a duplicate name in the s
   assert.equal(data.error.code, 'GROUP_NAME_TAKEN');
 });
 
-test('PATCH .../members/me/settlement-unit moves the caller into the group unit', async () => {
+test('PATCH .../members/me/settlement-unit creates a transfer request', async () => {
   const res = await fetch(`${baseUrl}/api/trips/${createdTrip.id}/members/me/settlement-unit`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${memberToken}` },
@@ -317,7 +317,15 @@ test('PATCH .../members/me/settlement-unit moves the caller into the group unit'
   });
   assert.equal(res.status, 200);
   const data = await res.json();
-  assert.equal(data.membership.settlement_unit_id, familyUnit.id);
+  assert.equal(data.transferRequest.status, 'pending');
+
+  const approveRes = await fetch(`${baseUrl}/api/trips/${createdTrip.id}/transfer-requests/${data.transferRequest.id}/approve`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${ownerToken}` },
+  });
+  assert.equal(approveRes.status, 200);
+  const approveData = await approveRes.json();
+  assert.equal(approveData.membership.settlement_unit_id, familyUnit.id);
 });
 
 test('a second member joining and moving into the same group unit forms a 2-person family', async () => {
@@ -336,6 +344,12 @@ test('a second member joining and moving into the same group unit forms a 2-pers
     body: JSON.stringify({ settlementUnitId: familyUnit.id }),
   });
   assert.equal(moveRes.status, 200);
+  const moveData = await moveRes.json();
+
+  await fetch(`${baseUrl}/api/trips/${createdTrip.id}/transfer-requests/${moveData.transferRequest.id}/approve`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${ownerToken}` },
+  });
 
   const membersRes = await fetch(`${baseUrl}/api/trips/${createdTrip.id}/members`, {
     headers: { Authorization: `Bearer ${ownerToken}` },
