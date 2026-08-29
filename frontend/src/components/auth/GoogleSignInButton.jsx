@@ -108,12 +108,18 @@ export function GoogleSignInButton({ onSuccess, onError, disabled = false }) {
           },
         });
 
+        const measuredWidth = buttonRef.current
+          ? Math.round(buttonRef.current.getBoundingClientRect().width)
+          : 0;
+        const targetWidth =
+          measuredWidth >= 200 && measuredWidth <= 400 ? measuredWidth : undefined;
+
         google.accounts.id.renderButton(buttonRef.current, {
           type: 'standard',
           theme: 'outline',
           size: 'large',
           shape: 'rectangular',
-          width: 320,
+          width: targetWidth,
           text: 'continue_with',
         });
 

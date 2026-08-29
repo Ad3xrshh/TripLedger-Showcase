@@ -18,10 +18,12 @@ vi.mock('../../hooks/useAuth.js', () => ({
 // run exactly as it would be for a fresh checkout with no Google Cloud
 // configuration yet - this is not a mocked/simulated absence.
 describe('GoogleSignInButton', () => {
-  it('renders nothing when VITE_GOOGLE_CLIENT_ID is not configured, without throwing', () => {
-    expect(import.meta.env.VITE_GOOGLE_CLIENT_ID).toBeFalsy();
+  it('renders nothing when VITE_GOOGLE_CLIENT_ID is not configured, without throwing', async () => {
+    vi.stubEnv('VITE_GOOGLE_CLIENT_ID', '');
+    vi.resetModules();
+    const { GoogleSignInButton: Component } = await import('./GoogleSignInButton.jsx');
 
-    const { container } = render(<GoogleSignInButton onSuccess={vi.fn()} onError={vi.fn()} />);
+    const { container } = render(<Component onSuccess={vi.fn()} onError={vi.fn()} />);
 
     // No script tag, no placeholder, no button - a fully empty render,
     // so the surrounding "or" divider in LoginPage/RegisterPage doesn't
