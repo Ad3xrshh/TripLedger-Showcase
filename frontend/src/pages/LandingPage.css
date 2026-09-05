@@ -1,286 +1,436 @@
 /*
-  Ported from the supplied tripledger_landing.html reference build.
-  Two deliberate departures from that file, both explained where they
-  apply below:
-  1. Every rule that targeted `body`/`:root` in the original targets
-     `.landing-page` (or a `.landing-page--*` modifier) here instead -
-     this page is one route inside a shared SPA, not a document that
-     owns the whole <body>.
-  2. The original's hero background/ticket-card/floating coins are
-     drawn by a hand-written Three.js scene onto two <canvas> layers
-     (see components/landing/HeroScene.jsx, mounted from
-     LandingPage.jsx and rendering into #scene-bg/#scene-fg below).
+  TripLedger Landing Page Styles
+  Faithful integration of approved TripLedger_Landingpage.html.
+  All styles are scoped under .tl-landing to isolate landing page design.
 */
 
-.landing-page {
-  --bg-inner: #24365e;
-  --bg-mid: #16213a;
-  --bg-outer: #070a12;
-  --accent: #e2a63b;
-  --accent-soft: #f3d9a3;
-  --accent-text: #1b1408;
+.tl-landing {
+  --bg: #07070A;
+  --bg-2: #0E0E12;
+  --bg-3: #17171C;
+  --line: rgba(255, 255, 255, 0.09);
+  --line-soft: rgba(255, 255, 255, 0.05);
+  --ink: #F5F3EE;
+  --ink-dim: #A5A29B;
+  --ink-mute: #65635C;
+  --teal: #CBA463;
+  --teal-soft: #E7CE9A;
+  --teal-deep: #A9824B;
+  --amber: #CBA463;
+  --amber-soft: #E7CE9A;
+  --accent: #CBA463;
+  --max: 1160px;
 
-  background: radial-gradient(circle at 50% 42%, var(--bg-inner) 0%, var(--bg-mid) 55%, var(--bg-outer) 100%);
-  color: #fff;
-  font-family: var(--font-body);
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Fraunces', Georgia, serif;
+  font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+  overflow-x: clip;
   min-height: 100vh;
-  transition: background 1.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.landing-page * {
+.tl-landing .on-light {
+  --bg: #F1EAD9;
+  --bg-2: #E8DEC4;
+  --bg-3: #FBF8EF;
+  --line: rgba(23, 21, 15, 0.14);
+  --line-soft: rgba(23, 21, 15, 0.08);
+  --ink: #171509;
+  --ink-dim: #5A5540;
+  --ink-mute: #8C8672;
+  --accent: #8A6423;
+  background: var(--bg);
+  color: var(--ink);
+}
+
+.tl-landing *,
+.tl-landing *::before,
+.tl-landing *::after {
   box-sizing: border-box;
 }
 
-.landing-page .mono {
-  font-family: var(--font-mono);
-}
-
-.landing-page--settled {
-  --bg-inner: #1c4c3d;
-  --bg-mid: #123326;
-  --bg-outer: #06120d;
-  --accent: #1f9e6b;
-  --accent-soft: #8fd6b8;
-  --accent-text: #06170f;
-}
-
-/* Ensure all headings inside landing page default to crisp white font */
-.landing-page h1,
-.landing-page h2,
-.landing-page h3,
-.landing-page h4 {
-  color: #fff;
-}
-
-/* ---------- rising punch-hole particles ---------- */
-#bubbles-container {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1;
-  overflow: hidden;
-}
-
-.punch {
-  position: absolute;
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 10px 1px color-mix(in srgb, var(--accent) 70%, transparent);
-  pointer-events: none;
-}
-
-@keyframes floatUp {
-  0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
-  10% { opacity: 0.55; }
-  90% { opacity: 0.35; }
-  100% { transform: translateY(-112vh) translateX(24px) rotate(180deg); opacity: 0; }
-}
-
-/* Three.js double canvas setup: bg behind hero text, fg in front.
-   Scoped under .landing-page for consistency with this file's own
-   convention (see header comment) - position:fixed means the visual
-   result is identical either way, this only prevents the bare #id from
-   ever matching an unrelated element outside this page. */
-.landing-page #scene-bg {
-  position: fixed;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-}
-
-.landing-page #scene-fg {
-  position: fixed;
-  inset: 0;
-  z-index: 110;
-  pointer-events: none;
-}
-
-
-/* ---------- header ---------- */
-.landing-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 2rem 4%;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 100;
-}
-
-.landing-header__logo {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 1.2rem;
-}
-
-.landing-header__logo-icon {
-  flex-shrink: 0;
+.tl-landing img,
+.tl-landing svg {
   display: block;
 }
 
-.landing-header__logo-word {
-  display: inline-flex;
-  letter-spacing: -0.01em;
+.tl-landing a {
+  color: inherit;
 }
 
-.landing-header__logo-trip {
-  color: #ffffff;
-  font-weight: 700;
+.tl-landing .mono {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
 }
 
-.landing-header__logo-ledger {
-  color: #2dbfa1;
-  font-weight: 500;
+.tl-landing .container {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 0 22px;
 }
 
-.landing-nav {
-  display: flex;
-  gap: 0.3rem;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  padding: 0.4rem;
-  border-radius: 100px;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.18),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+@media (min-width: 900px) {
+  .tl-landing .container {
+    padding: 0 48px;
+  }
 }
 
-.landing-nav__item {
-  font-family: var(--font-body);
-  color: rgba(255, 255, 255, 0.72);
-  text-decoration: none;
-  font-size: 0.83rem;
-  font-weight: 500;
-  padding: 0.5rem 1.15rem;
-  border-radius: 100px;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  transition: all 0.3s ease;
+.tl-landing :focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 3px;
 }
 
-.landing-nav__item:hover,
-.landing-nav__item.landing-nav__item--active {
-  background: var(--accent);
-  color: var(--accent-text);
+.tl-landing section,
+.tl-landing header {
+  position: relative;
+  background: var(--bg);
+  color: var(--ink);
 }
 
-.landing-header__cta {
-  background: rgba(0, 0, 0, 0.45);
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  padding: 0.85rem 1.7rem;
-  border-radius: 100px;
+.tl-landing h1,
+.tl-landing h2,
+.tl-landing h3 {
+  font-family: 'Fraunces', Georgia, serif;
   font-weight: 600;
-  font-size: 0.83rem;
-  text-decoration: none;
-  display: inline-block;
-  transition: all 0.3s ease;
+  color: var(--ink);
+  margin: 0;
+  letter-spacing: -0.015em;
 }
 
-.landing-header__cta:hover {
-  background: rgba(0, 0, 0, 0.65);
-  transform: translateY(-2px);
+.tl-landing h2 {
+  font-size: clamp(2.2rem, 7vw, 3.6rem);
+  line-height: 1.08;
+  max-width: 16ch;
 }
 
-/* ---------- mobile nav (Pass 2.7) ---------- */
-/* Hidden at desktop widths - .landing-nav (the pill nav) is the visible
-   navigation there. Only shown once .landing-nav hides at 640px, below. */
-.landing-mobile-nav-toggle {
-  display: none;
+.tl-landing p {
+  margin: 0;
+}
+
+.tl-landing .lede {
+  font-size: clamp(16px, 4vw, 18.5px);
+  line-height: 1.6;
+  color: var(--ink-dim);
+  max-width: 50ch;
+  margin-top: 18px;
+}
+
+/* ---------- buttons ---------- */
+.tl-landing .btn {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  flex-shrink: 0;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(255, 255, 255, 0.06);
-  color: #fff;
+  gap: 10px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 14.5px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  padding: 16px 28px;
+  border-radius: 3px;
+  border: 1px solid transparent;
   cursor: pointer;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+  text-decoration: none;
+  width: 100%;
+  transition: transform 0.18s ease, background-color 0.18s ease, border-color 0.18s ease, opacity 0.18s ease;
 }
 
-.landing-mobile-nav-toggle:hover {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.24);
+@media (min-width: 640px) {
+  .tl-landing .btn {
+    width: auto;
+  }
 }
 
-.landing-mobile-nav {
-  position: fixed;
-  /* Clears the mobile header exactly: header's top+bottom padding
-     (1.1rem each, set in the 640px media query below) plus the 40px
-     toggle button's own height, plus a small visual gap. */
-  top: calc(1.1rem + 1.1rem + 40px + 0.5rem);
-  left: 5%;
-  right: 5%;
-  /* Matches .landing-header's z-index (100), not the .landing-nav pill's
-     original 99 - the header itself already sits under #scene-fg's
-     particle canvas (z-index: 110, pointer-events: none) and stays
-     legible there because the canvas is mostly transparent; this keeps
-     the dropdown menu it opens from stacking any lower than the header
-     it hangs off of. */
-  z-index: 100;
+.tl-landing .btn:active {
+  transform: translateY(1px);
+}
+
+.tl-landing .btn--primary {
+  background: linear-gradient(180deg, var(--teal-soft), var(--teal));
+  color: #1A1408;
+}
+
+.tl-landing .btn--primary:hover,
+.tl-landing .btn--primary:hover:not(:disabled) {
+  opacity: 0.92;
+  background: linear-gradient(180deg, var(--teal-soft), var(--teal));
+  color: #1A1408;
+}
+
+.tl-landing .btn--amber {
+  background: linear-gradient(180deg, var(--amber-soft), var(--amber));
+  color: #1A1408;
+}
+
+.tl-landing .btn--amber:hover,
+.tl-landing .btn--amber:hover:not(:disabled) {
+  opacity: 0.92;
+  background: linear-gradient(180deg, var(--amber-soft), var(--amber));
+  color: #1A1408;
+}
+
+.tl-landing .btn--ghost {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--line);
+}
+
+.tl-landing .btn--ghost:hover,
+.tl-landing .btn--ghost:hover:not(:disabled) {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--ink);
+}
+
+.tl-landing .btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.tl-landing .btn-row {
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
-  padding: 0.6rem;
-  background: rgba(12, 17, 32, 0.92);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 20px;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.28),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.06);
-  animation: landing-mobile-nav-in 0.18s ease-out;
+  gap: 14px;
+  margin-top: 32px;
 }
 
-.landing-mobile-nav__item {
-  font-family: var(--font-body);
-  color: rgba(255, 255, 255, 0.78);
+@media (min-width: 640px) {
+  .tl-landing .btn-row {
+    flex-direction: row;
+  }
+}
+
+/* ---------- nav ---------- */
+.tl-landing nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(7, 7, 10, 0.86);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--line);
+}
+
+.tl-landing .nav-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 0;
+}
+
+.tl-landing .brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
   text-decoration: none;
-  font-size: 0.95rem;
-  font-weight: 500;
-  text-align: left;
-  padding: 0.75rem 1rem;
-  border-radius: 12px;
-  border: none;
+  color: var(--ink);
+}
+
+.tl-landing .brand-mark {
+  height: 25px;
+  width: auto;
+  display: block;
+}
+
+.tl-landing .brand-word {
+  height: 14px;
+  width: auto;
+  display: block;
+}
+
+@media (min-width: 900px) {
+  .tl-landing .brand-mark {
+    height: 30px;
+  }
+  .tl-landing .brand-word {
+    height: 17px;
+  }
+}
+
+@media (max-width: 899px) {
+  .tl-landing nav .container {
+    padding-left: 34px;
+    padding-right: 34px;
+  }
+}
+
+.tl-landing .nav-links {
+  display: none;
+  gap: 30px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px;
+  color: var(--ink-dim);
+}
+
+.tl-landing .nav-links a {
+  text-decoration: none;
+}
+
+.tl-landing .nav-links a:hover {
+  color: var(--teal-soft);
+}
+
+@media (min-width: 820px) {
+  .tl-landing .nav-links {
+    display: flex;
+  }
+}
+
+.tl-landing .nav-cta {
+  padding: 11px 20px;
+  font-size: 13px;
+  width: auto;
+}
+
+.tl-landing .btn--teal-outline {
   background: transparent;
-  cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  color: var(--teal-soft);
+  border: 1px solid rgba(203, 164, 99, 0.45);
 }
 
-.landing-mobile-nav__item:hover,
-.landing-mobile-nav__item.landing-mobile-nav__item--active {
-  background: var(--accent);
-  color: var(--accent-text);
+.tl-landing .btn--teal-outline:hover,
+.tl-landing .btn--teal-outline:hover:not(:disabled) {
+  background: rgba(203, 164, 99, 0.1);
+  color: var(--teal-soft);
+  border-color: rgba(203, 164, 99, 0.75);
 }
 
-.landing-mobile-nav__cta {
-  margin-top: 0.3rem;
-  text-align: center;
-  color: #fff;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 0.95rem;
-  padding: 0.85rem 1rem;
-  border-radius: 12px;
-  background: var(--accent);
-  color: var(--accent-text);
+/* ---------- diagonal seam dividers ---------- */
+.tl-landing .seam {
+  position: relative;
+  height: 52px;
+  margin-top: -1px;
+  line-height: 0;
+  overflow: hidden;
 }
 
-@keyframes landing-mobile-nav-in {
+.tl-landing .seam svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+@media (min-width: 900px) {
+  .tl-landing .seam {
+    height: 84px;
+  }
+}
+
+/* ---------- hero ---------- */
+.tl-landing .hero {
+  padding-top: 64px;
+  padding-bottom: 72px;
+  overflow: hidden;
+}
+
+@media (min-width: 900px) {
+  .tl-landing .hero {
+    padding-top: 104px;
+    padding-bottom: 96px;
+  }
+}
+
+.tl-landing .hero-grid {
+  position: relative;
+  display: grid;
+  gap: 56px;
+}
+
+@media (min-width: 1020px) {
+  .tl-landing .hero-grid {
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 40px;
+    align-items: center;
+  }
+}
+
+.tl-landing .eyebrow {
+  font-family: 'IBM Plex Mono', monospace;
+  text-transform: none;
+  font-size: 13px;
+  color: var(--teal-soft);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.tl-landing .eyebrow .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--teal);
+  box-shadow: 0 0 0 4px rgba(203, 164, 99, 0.18);
+}
+
+.tl-landing .hero h1 {
+  font-family: 'Fraunces', serif;
+  font-weight: 700;
+  font-size: clamp(2.7rem, 10.5vw, 5.6rem);
+  line-height: 1.0;
+  letter-spacing: -0.02em;
+}
+
+.tl-landing .hero h1 .accent {
+  color: var(--teal-soft);
+}
+
+.tl-landing .hero .lede {
+  font-size: clamp(16px, 4vw, 19px);
+  max-width: 44ch;
+}
+
+.tl-landing .trust-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 26px;
+  margin-top: 40px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12.5px;
+  color: var(--ink-dim);
+}
+
+.tl-landing .trust-row span {
+  color: var(--teal);
+}
+
+/* ---------- ledger mock card + layered geometry ---------- */
+.tl-landing .card-stage {
+  position: relative;
+  padding: 14px 10px 26px 26px;
+}
+
+.tl-landing .card-stage::before {
+  content: "";
+  position: absolute;
+  top: 26px;
+  left: 0;
+  right: 26px;
+  bottom: 0;
+  background: linear-gradient(155deg, var(--teal-deep), var(--bg-2) 78%);
+  border-radius: 16px;
+  transform: rotate(-3deg);
+  box-shadow: 0 30px 70px -34px rgba(0, 0, 0, 0.6);
+}
+
+.tl-landing .ledger-card {
+  position: relative;
+  background: linear-gradient(180deg, var(--bg-3), var(--bg-2));
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: 0 30px 60px -28px rgba(0, 0, 0, 0.65);
+  overflow: hidden;
+  animation: tlRise 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: 0.1s;
+}
+
+@keyframes tlRise {
   from {
     opacity: 0;
-    transform: translateY(-6px);
+    transform: translateY(18px);
   }
   to {
     opacity: 1;
@@ -288,592 +438,627 @@
   }
 }
 
-/* ---------- hero shell ---------- */
-.landing-page__view--home {
-  height: 100vh;
-  overflow: hidden;
-  position: relative;
-}
-
-.landing-page--scrollable .landing-page__view--home {
-  height: auto;
-  overflow: visible;
-}
-
-.landing-hero {
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 4%;
-  position: relative;
-  z-index: 5;
-}
-
-.landing-hero__content {
+.tl-landing .ledger-card__head {
   display: flex;
   justify-content: space-between;
-  align-items: stretch;
-  width: 100%;
-  height: 100%;
+  align-items: flex-start;
+  padding: 22px 22px 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.tl-landing .ledger-card__tag {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  color: var(--teal-soft);
+}
+
+.tl-landing .ledger-card__title {
+  font-size: 21px;
+  font-weight: 600;
+  margin-top: 5px;
+}
+
+.tl-landing .ledger-card__meta {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  color: var(--ink-mute);
+  margin-top: 4px;
+}
+
+.tl-landing .status-pill {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.04em;
+  padding: 5px 11px;
+  border: 1px solid rgba(203, 164, 99, 0.4);
+  color: var(--teal-soft);
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.tl-landing .ledger-card__total {
+  display: flex;
+  justify-content: space-between;
+  padding: 13px 22px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  color: var(--ink-dim);
+  border-bottom: 1px solid var(--line-soft);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.tl-landing .ledger-card__total b {
+  color: var(--ink);
+  font-size: 13.5px;
+  font-weight: 500;
+}
+
+.tl-landing .entry {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 15px 22px;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.tl-landing .entry:last-of-type {
+  border-bottom: none;
+}
+
+.tl-landing .entry__name {
+  font-size: 15px;
+}
+
+.tl-landing .entry__meta {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11.5px;
+  color: var(--ink-mute);
+  margin-top: 2px;
+}
+
+.tl-landing .entry__amount {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 14px;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.tl-landing .balances {
+  padding: 18px 22px 22px;
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.tl-landing .balances__label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.05em;
+  color: var(--ink-mute);
+  margin-bottom: 12px;
+}
+
+.tl-landing .balance-rows {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px 14px;
+}
+
+.tl-landing .balance {
+  display: flex;
+  justify-content: space-between;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12.5px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.tl-landing .balance b {
+  font-weight: 500;
+}
+
+.tl-landing .pos {
+  color: var(--teal-soft);
+}
+
+.tl-landing .neg {
+  color: var(--ink-mute);
+}
+
+/* ---------- old way / new way panels ---------- */
+.tl-landing .compare {
+  display: grid;
+  gap: 22px;
+  margin-top: 44px;
+}
+
+@media (min-width: 820px) {
+  .tl-landing .compare {
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+}
+
+.tl-landing .panel {
+  padding: 36px 30px;
+  border-radius: 14px;
+}
+
+@media (min-width: 820px) {
+  .tl-landing .panel {
+    border-radius: 0;
+  }
+  .tl-landing .panel:first-child {
+    border-radius: 14px 0 0 14px;
+  }
+  .tl-landing .panel:last-child {
+    border-radius: 0 14px 14px 0;
+  }
+}
+
+.tl-landing .panel--old {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+}
+
+@media (min-width: 820px) {
+  .tl-landing .panel--old {
+    border-right: none;
+  }
+}
+
+.tl-landing .panel--new {
+  background: linear-gradient(155deg, var(--teal-deep), #1C160A);
+  border: 1px solid rgba(203, 164, 99, 0.3);
+  color: #F7F2E4;
+}
+
+.tl-landing .panel h3 {
+  font-size: clamp(21px, 4vw, 25px);
+  font-weight: 600;
+  margin-bottom: 22px;
+  max-width: 18ch;
+}
+
+.tl-landing .panel--new h3 {
+  color: #F7FFFC;
+}
+
+.tl-landing .panel ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.tl-landing .panel li {
+  display: flex;
+  gap: 12px;
+  font-size: 15px;
+  color: var(--ink-dim);
+  line-height: 1.55;
+}
+
+.tl-landing .panel--new li {
+  color: #E8DCC2;
+}
+
+.tl-landing .mark {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin-top: 3px;
+}
+
+.tl-landing .mark--x line {
+  stroke: var(--ink-mute);
+}
+
+.tl-landing .mark--check path {
+  stroke: var(--teal-soft);
+}
+
+/* ---------- product showcase (diagonal band) ---------- */
+.tl-landing .showcase {
+  background: linear-gradient(160deg, #17171C, #07070A 72%);
+  padding: 80px 0 92px;
+}
+
+@media (min-width: 900px) {
+  .tl-landing .showcase {
+    padding: 110px 0 120px;
+  }
+}
+
+.tl-landing .showcase h2 {
+  color: #F5F3EE;
+}
+
+.tl-landing .showcase .lede {
+  color: #A5A29B;
+}
+
+.tl-landing .tabs {
+  display: inline-flex;
+  gap: 2px;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 4px;
+  border-radius: 999px;
+  margin-top: 36px;
+  border: 1px solid var(--line);
+}
+
+.tl-landing .tab {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12.5px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #A5A29B;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tl-landing .tab[aria-selected="true"] {
+  background: var(--teal);
+  color: #1A1408;
+}
+
+.tl-landing .tab .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #A5A29B;
+}
+
+.tl-landing .tab[aria-selected="true"] .dot {
+  background: #1A1408;
+}
+
+.tl-landing .tabpanel {
+  display: none;
+  margin-top: 32px;
+}
+
+.tl-landing .tabpanel.is-active {
+  display: block;
+}
+
+/* ---------- timeline (how it works) ---------- */
+.tl-landing .timeline {
+  margin-top: 48px;
   position: relative;
 }
 
-/* ---------- left column ---------- */
-.landing-hero__left {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  padding: 6rem 0;
-  gap: 1.8rem;
-  z-index: 10;
-  max-width: 640px;
+.tl-landing .timeline::before {
+  content: "";
+  position: absolute;
+  left: 19px;
+  top: 6px;
+  bottom: 6px;
+  width: 1px;
+  background: var(--line);
 }
 
-.landing-hero__title {
-  font-family: var(--font-display);
-  font-size: clamp(3rem, 6.6vw, 6.4rem);
-  line-height: 0.98;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  margin: 0;
+@media (min-width: 760px) {
+  .tl-landing .timeline::before {
+    left: 50%;
+    margin-left: -0.5px;
+  }
 }
 
-.landing-hero__title-outline {
-  color: rgba(255, 255, 255, 0.9);
+.tl-landing .tl-item {
+  position: relative;
+  padding: 0 0 40px 52px;
 }
 
-.landing-hero__title-accent {
-  color: var(--accent);
-  transition: color 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+@media (min-width: 760px) {
+  .tl-landing .tl-item {
+    width: 50%;
+    padding: 0 0 56px 0;
+  }
+  .tl-landing .tl-item:nth-child(odd) {
+    padding-right: 56px;
+    text-align: right;
+  }
+  .tl-landing .tl-item:nth-child(even) {
+    margin-left: 50%;
+    padding-left: 56px;
+  }
 }
 
-.landing-hero__description {
-  color: rgba(255, 255, 255, 0.68);
-  font-size: 1.05rem;
-  line-height: 1.6;
-  max-width: 420px;
-  margin: 0;
+.tl-landing .tl-item:last-child {
+  padding-bottom: 0;
 }
 
-.landing-hero__primary-btn {
-  display: flex;
-  align-items: center;
-  gap: 1.3rem;
-  background: rgba(0, 0, 0, 0.45);
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  padding: 0.4rem 0.4rem 0.4rem 1.5rem;
-  border-radius: 100px;
-  font-weight: 700;
-  font-size: 0.95rem;
-  cursor: pointer;
-  width: fit-content;
-  text-decoration: none;
-  transition: all 0.3s ease;
-}
-
-.landing-hero__primary-btn:hover {
-  background: rgba(0, 0, 0, 0.65);
-  transform: translateY(-3px);
-}
-
-.landing-hero__plus-icon {
-  background: var(--accent);
-  color: var(--accent-text);
+.tl-landing .tl-num {
+  position: absolute;
+  left: 0;
+  top: 0;
   width: 38px;
   height: 38px;
   border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.3rem;
-  font-weight: 900;
-  transition: background 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.landing-hero__trust {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-top: auto;
-}
-
-.landing-hero__trust-icon {
-  width: 46px;
-  height: 46px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.landing-hero__trust-text {
-  display: flex;
-  flex-direction: column;
-}
-
-.landing-hero__trust-title {
-  font-size: 0.68rem;
-  letter-spacing: 0.1em;
-  color: rgba(255, 255, 255, 0.55);
-}
-
-.landing-hero__trust-num {
-  font-family: var(--font-mono);
-  font-size: 0.95rem;
-  font-weight: 600;
-}
-
-/* ---------- right column ---------- */
-.landing-hero__right {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: flex-end;
-  text-align: right;
-  height: 100%;
-  padding: 6rem 0;
-  z-index: 10;
-  width: 420px;
-}
-
-.landing-switcher {
-  display: flex;
-  flex-direction: column;
-  gap: 1.3rem;
-  align-items: flex-end;
-}
-
-.landing-switcher__eyebrow {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.14em;
-  color: rgba(255, 255, 255, 0.5);
-  text-transform: uppercase;
-}
-
-.landing-state-cards {
-  display: flex;
-  gap: 0.9rem;
-}
-
-.landing-state-card {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  padding: 1.3rem 1.1rem 1.1rem;
-  border-radius: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 1rem;
-  cursor: pointer;
-  width: 156px;
-  text-align: left;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  backdrop-filter: blur(10px);
-  color: inherit;
-  font: inherit;
-}
-
-.landing-state-card:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.32);
-  transform: translateY(-4px);
-}
-
-.landing-state-card--active {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 1px var(--accent);
-}
-
-.landing-state-card__icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 255, 255, 0.08);
-  transition: background 0.4s ease;
-}
-
-.landing-state-card--active .landing-state-card__icon {
-  background: var(--accent);
-  color: var(--accent-text);
-}
-
-.landing-state-card__label {
-  font-weight: 600;
-  font-size: 0.92rem;
-}
-
-.landing-state-card__sub {
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.55);
-}
-
-.landing-hero__side-title {
-  font-family: var(--font-display);
-  font-size: clamp(2.4rem, 4.4vw, 4rem);
-  line-height: 1;
-  font-weight: 700;
-  align-self: flex-end;
-  text-align: right;
-  letter-spacing: -0.02em;
-  margin: 0;
-}
-
-/* ---------- hero ticket card (CSS/SVG replacement for the canvas-drawn
-   3D ticket - see the integration notes in LandingPage.jsx) ---------- */
-.landing-ticket {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -46%);
-  width: min(420px, 86vw);
-  background: var(--bg-mid);
-  border-radius: 22px;
-  padding: 1.7rem 1.8rem 1.5rem;
-  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.45);
-  z-index: 1;
-  transition:
-    background 1.2s cubic-bezier(0.4, 0, 0.2, 1),
-    transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.landing-ticket__stripe {
-  height: 6px;
-  margin: -1.7rem -1.8rem 1.3rem;
-  border-radius: 22px 22px 0 0;
-  background: var(--accent);
-  transition: background 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.landing-ticket__title {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 1.35rem;
-}
-
-.landing-ticket__meta {
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.5);
-  margin-top: 0.2rem;
-}
-
-.landing-ticket__perforation {
-  border: none;
-  border-top: 3px dashed rgba(255, 255, 255, 0.25);
-  margin: 1.6rem 0;
-}
-
-.landing-ticket__amount {
-  font-family: var(--font-mono);
-  font-weight: 600;
-  font-size: 2rem;
-}
-
-.landing-ticket__amount-label {
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.5);
-  margin-top: 0.2rem;
-}
-
-.landing-ticket__stamp {
-  position: absolute;
-  right: 1.6rem;
-  bottom: 1.4rem;
-  border: 2px solid var(--accent);
+  background: var(--bg-3);
+  border: 1px solid var(--line);
   color: var(--accent);
-  border-radius: 999px;
-  padding: 0.3rem 0.9rem;
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.08em;
-  transform: rotate(-10deg);
-  transition:
-    border-color 1.2s cubic-bezier(0.4, 0, 0.2, 1),
-    color 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-@media (max-width: 1200px) {
-  .landing-page__view--home {
-    height: auto;
-    overflow: visible;
-  }
-
-  .landing-hero {
-    height: auto;
-    min-height: 100vh;
-    padding-top: 7rem;
-  }
-
-  .landing-hero__content {
-    flex-direction: column;
-    align-items: center;
-    gap: 3rem;
-    padding-bottom: 4rem;
-    height: auto;
-  }
-
-  .landing-hero__left,
-  .landing-hero__right {
-    align-items: center;
-    text-align: center;
-    padding: 0;
-    width: 100%;
-    max-width: 520px;
-  }
-
-  .landing-hero__title,
-  .landing-hero__side-title {
-    text-align: center;
-  }
-
-  .landing-hero__side-title {
-    align-self: center;
-  }
-
-  .landing-hero__trust {
-    margin-top: 1.5rem;
-  }
-
-  .landing-ticket {
-    position: relative;
-    top: auto;
+@media (min-width: 760px) {
+  .tl-landing .tl-item:nth-child(odd) .tl-num {
     left: auto;
-    transform: none;
-    margin-top: 2rem;
+    right: -19px;
+  }
+  .tl-landing .tl-item:nth-child(even) .tl-num {
+    left: -19px;
   }
 }
 
-@media (max-width: 640px) {
-  .landing-header {
-    padding: 1.1rem 5%;
-  }
-
-  .landing-nav {
-    display: none;
-  }
-
-  /* The pill nav's replacement below 640px - see .landing-mobile-nav-toggle
-     above, which stays hidden (display: none) at every wider breakpoint. */
-  .landing-mobile-nav-toggle {
-    display: inline-flex;
-  }
-
-  .landing-header__logo {
-    font-size: 1rem;
-  }
-
-  .landing-header__logo-icon {
-    width: 28px;
-    height: 25px;
-  }
-
-  .landing-header__cta {
-    padding: 0.7rem 1.3rem;
-    font-size: 0.78rem;
-  }
-
-  .landing-hero__right {
-    width: 100%;
-  }
-
-  .landing-state-cards {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
+.tl-landing .tl-item h3 {
+  font-size: 19px;
+  font-weight: 600;
+  margin-bottom: 8px;
 }
 
-/* ---------- shared "page" layout for How it works / FAQ ---------- */
-.landing-page__view--content {
-  position: relative;
-  z-index: 5;
-  min-height: 100vh;
-}
-
-.landing-page__inner {
-  max-width: 880px;
-  margin: 0 auto;
-  padding: 9rem 6% 7rem;
-}
-
-.landing-page__eyebrow {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  letter-spacing: 0.14em;
-  color: rgba(255, 255, 255, 0.5);
-  text-transform: uppercase;
-}
-
-.landing-page__title {
-  font-family: var(--font-display);
-  font-size: clamp(2.3rem, 5vw, 3.6rem);
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  margin-top: 0.6rem;
-  color: #fff;
-}
-
-.landing-page__lede {
-  color: rgba(255, 255, 255, 0.68);
-  font-size: 1.05rem;
+.tl-landing .tl-item p {
+  color: var(--ink-dim);
+  font-size: 15px;
   line-height: 1.6;
-  max-width: 640px;
-  margin-top: 1rem;
 }
 
-.landing-steps {
-  display: flex;
-  flex-direction: column;
-  gap: 1.1rem;
-  margin-top: 3rem;
-}
-
-.landing-step-card {
-  position: relative;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 18px;
-  padding: 1.7rem 1.8rem 1.5rem;
-}
-
-.landing-step-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 1.8rem;
-  right: 1.8rem;
-  height: 3px;
-  border-radius: 0 0 3px 3px;
-  background: var(--accent);
-  transition: background 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.landing-step-card__tag {
-  display: inline-block;
-  font-size: 0.75rem;
-  color: var(--accent);
-  letter-spacing: 0.08em;
-  margin-bottom: 0.6rem;
-  transition: color 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.landing-step-card h3 {
-  font-family: var(--font-display);
-  font-size: 1.25rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-  color: #fff;
-}
-
-.landing-step-card p {
-  color: rgba(255, 255, 255, 0.68);
-  font-size: 0.95rem;
-  line-height: 1.6;
-  margin: 0;
-}
-
-.landing-step-card strong {
-  color: #fff;
+.tl-landing .tl-item p b {
+  color: var(--ink);
   font-weight: 600;
 }
 
-.landing-tone-yellow {
-  color: #e2c23b;
-  font-weight: 600;
+.tl-landing .callout {
+  margin-top: 8px;
+  padding: 22px 24px;
+  background: var(--bg-3);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 10px 10px 0;
+  font-size: 14.5px;
+  color: var(--ink-dim);
+  max-width: 74ch;
 }
 
-.landing-tone-red {
-  color: #e0685a;
-  font-weight: 600;
+.tl-landing .callout b {
+  color: var(--ink);
 }
 
-.landing-page__note {
-  margin-top: 2.6rem;
-  padding: 1.4rem 1.6rem;
+/* ---------- why tripledger : alternating feature rows ---------- */
+.tl-landing .feature-row {
+  display: grid;
+  gap: 26px;
+  align-items: center;
+  padding: 40px 0;
+  border-top: 1px solid var(--line);
+}
+
+.tl-landing .feature-row:last-child {
+  border-bottom: 1px solid var(--line);
+}
+
+@media (min-width: 780px) {
+  .tl-landing .feature-row {
+    grid-template-columns: 120px 1fr;
+    gap: 44px;
+    padding: 52px 0;
+  }
+  .tl-landing .feature-row.reverse {
+    grid-template-columns: 1fr 120px;
+  }
+  .tl-landing .feature-row.reverse .feature-icon {
+    order: 2;
+  }
+}
+
+.tl-landing .feature-icon {
+  width: 64px;
+  height: 64px;
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px dashed rgba(255, 255, 255, 0.18);
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--teal);
+  flex: none;
 }
 
-.landing-page__note p {
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 0.92rem;
-  line-height: 1.6;
-  margin: 0;
+.tl-landing .feature-icon svg {
+  width: 28px;
+  height: 28px;
 }
 
-.landing-page__note strong {
-  color: #fff;
-}
-
-.landing-faq-group {
-  margin-top: 2.6rem;
-}
-
-.landing-faq-group__title {
-  font-size: 0.72rem;
-  letter-spacing: 0.14em;
-  color: var(--accent);
-  display: block;
-  margin-bottom: 0.9rem;
-  transition: color 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.landing-faq-item {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-  padding: 1rem 0;
-}
-
-.landing-faq-item summary {
-  cursor: pointer;
-  font-family: var(--font-display);
+.tl-landing .feature-row h3 {
+  font-size: clamp(19px, 3vw, 22px);
   font-weight: 600;
-  font-size: 1rem;
+  margin-bottom: 8px;
+}
+
+.tl-landing .feature-row p {
+  color: var(--ink-dim);
+  font-size: 15.5px;
+  line-height: 1.6;
+  max-width: 56ch;
+}
+
+/* ---------- faq ---------- */
+.tl-landing .faq-group {
+  margin-top: 8px;
+}
+
+.tl-landing .faq-group + .faq-group {
+  margin-top: 38px;
+}
+
+.tl-landing .faq-group__label {
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--accent);
+  padding: 0 0 4px;
+}
+
+.tl-landing details.faq {
+  border-bottom: 1px solid var(--line);
+}
+
+.tl-landing details.faq summary {
   list-style: none;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  color: #fff;
+  gap: 18px;
+  padding: 18px 0;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
 }
 
-.landing-faq-item summary::-webkit-details-marker {
+.tl-landing details.faq summary::-webkit-details-marker {
   display: none;
 }
 
-.landing-faq-item summary::after {
-  content: '+';
-  font-size: 1.3rem;
+.tl-landing .faq-icon {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  position: relative;
+}
+
+.tl-landing .faq-icon::before,
+.tl-landing .faq-icon::after {
+  content: "";
+  position: absolute;
+  background: var(--ink-dim);
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.tl-landing .faq-icon::before {
+  width: 14px;
+  height: 1.5px;
+  top: 9px;
+  left: 3px;
+}
+
+.tl-landing .faq-icon::after {
+  width: 1.5px;
+  height: 14px;
+  left: 9px;
+  top: 3px;
+}
+
+.tl-landing details.faq[open] .faq-icon::after {
+  opacity: 0;
+}
+
+.tl-landing details.faq[open] summary {
   color: var(--accent);
-  flex-shrink: 0;
-  transition:
-    transform 0.25s ease,
-    color 1.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.landing-faq-item[open] summary::after {
-  transform: rotate(45deg);
+.tl-landing details.faq .faq-body {
+  padding: 0 0 20px;
+  color: var(--ink-dim);
+  font-size: 15px;
+  line-height: 1.65;
+  max-width: 64ch;
 }
 
-.landing-faq-item p {
-  color: rgba(255, 255, 255, 0.68);
-  font-size: 0.93rem;
-  line-height: 1.6;
-  margin-top: 0.8rem;
+/* ---------- final CTA ---------- */
+.tl-landing .final {
+  text-align: left;
+  overflow: hidden;
 }
 
-@media (max-width: 640px) {
-  .landing-page__inner {
-    padding: 7.5rem 6% 5rem;
+.tl-landing .final .container {
+  position: relative;
+  z-index: 1;
+}
+
+.tl-landing .final::before {
+  content: "";
+  position: absolute;
+  top: -30%;
+  right: -8%;
+  width: 520px;
+  height: 520px;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(203, 164, 99, 0.16), transparent 72%);
+  pointer-events: none;
+}
+
+.tl-landing .final::after {
+  content: "";
+  position: absolute;
+  bottom: -40%;
+  left: -6%;
+  width: 420px;
+  height: 420px;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(203, 164, 99, 0.10), transparent 72%);
+  pointer-events: none;
+}
+
+.tl-landing footer {
+  background: var(--bg-2);
+  padding: 36px 0 34px;
+  border-top: 1px solid var(--line);
+}
+
+.tl-landing .footer-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  color: var(--ink-mute);
+}
+
+.tl-landing .footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-family: 'Fraunces', serif;
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.tl-landing .footer-brand .brand-mark {
+  height: 18px;
+}
+
+.tl-landing .footer-brand .brand-word {
+  height: 11px;
+}
+
+@media (min-width: 900px) {
+  .tl-landing .footer-brand .brand-mark {
+    height: 22px;
+  }
+  .tl-landing .footer-brand .brand-word {
+    height: 13px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tl-landing {
+    scroll-behavior: auto;
+  }
+  .tl-landing .ledger-card {
+    animation: none;
   }
 }
