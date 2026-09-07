@@ -32,7 +32,7 @@
   pointer-events: none;
 }
 
-.google-signin__button > div,
+.google-signin__button div,
 .google-signin__button iframe {
   width: 100% !important;
   max-width: 100% !important;
