@@ -122,6 +122,7 @@ export function GoogleSignInButton({ onSuccess, onError, disabled = false }) {
           shape: 'rectangular',
           width: targetWidth,
           text: 'continue_with',
+          logo_alignment: 'left',
         });
 
         setStatus('ready');
