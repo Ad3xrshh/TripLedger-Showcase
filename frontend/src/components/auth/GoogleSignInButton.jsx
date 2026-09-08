@@ -117,7 +117,7 @@ export function GoogleSignInButton({ onSuccess, onError, disabled = false }) {
 
         google.accounts.id.renderButton(buttonRef.current, {
           type: 'standard',
-          theme: 'outline',
+          theme: 'filled_black',
           size: 'large',
           shape: 'rectangular',
           width: targetWidth,
