@@ -84,6 +84,9 @@ export function GoogleSignInButton({ onSuccess, onError, disabled = false }) {
     let cancelled = false;
     setStatus('loading');
 
+    let observer = null;
+    let lastWidth = 0;
+
     loadGoogleIdentityServices()
       .then((google) => {
         if (cancelled || !buttonRef.current) return;
@@ -109,23 +112,42 @@ export function GoogleSignInButton({ onSuccess, onError, disabled = false }) {
         });
 
         const container = buttonRef.current.parentElement || buttonRef.current;
-        const measuredWidth = container
-          ? Math.round(container.getBoundingClientRect().width)
-          : 0;
-        const targetWidth =
-          measuredWidth >= 200 ? Math.min(measuredWidth, 400) : undefined;
 
-        google.accounts.id.renderButton(buttonRef.current, {
-          type: 'standard',
-          theme: 'outline',
-          size: 'large',
-          shape: 'rectangular',
-          width: targetWidth,
-          text: 'continue_with',
-          logo_alignment: 'left',
-        });
+        const doRender = () => {
+          if (!buttonRef.current || cancelled) return;
+          const currentWidth = container
+            ? Math.round(container.getBoundingClientRect().width)
+            : 0;
 
-        setStatus('ready');
+          if (Math.abs(currentWidth - lastWidth) < 2 && lastWidth > 0) return;
+          lastWidth = currentWidth;
+
+          const targetWidth =
+            currentWidth >= 200 ? Math.min(currentWidth, 400) : undefined;
+
+          buttonRef.current.innerHTML = '';
+          google.accounts.id.renderButton(buttonRef.current, {
+            type: 'standard',
+            theme: 'outline',
+            size: 'large',
+            shape: 'rectangular',
+            width: targetWidth,
+            text: 'continue_with',
+            logo_alignment: 'left',
+          });
+          setStatus('ready');
+        };
+
+        doRender();
+
+        if (typeof ResizeObserver !== 'undefined' && container) {
+          observer = new ResizeObserver(() => {
+            if (!cancelled) {
+              doRender();
+            }
+          });
+          observer.observe(container);
+        }
       })
       .catch((err) => {
         if (cancelled) return;
@@ -135,6 +157,9 @@ export function GoogleSignInButton({ onSuccess, onError, disabled = false }) {
 
     return () => {
       cancelled = true;
+      if (observer) {
+        observer.disconnect();
+      }
     };
   }, []);
 
