@@ -4,6 +4,8 @@
 
 With TripLedger, group members log expenses as they happen; expenses are verified according to configurable trip rules; families or couples can combine their financial shares into single **settlement units** without altering individual member roles; and at the end of a trip, TripLedger calculates an exact, mathematically conserved settlement showing precisely who owes whom, reduces the number of settlement transactions required using creditor/debtor matching, and permanently freezes the completed ledger.
 
+TripLedger is fully developed, tested, security-audited, and deployed to production at **[https://trip-ledger.in](https://trip-ledger.in)**.
+
 ---
 
 ## Overview
@@ -19,13 +21,20 @@ Managing shared expenses on group trips often fails due to spreadsheets, manual 
 
 ---
 
-## Current Status
+## Current Status & Deployment Matrix
 
-TripLedger has completed its entire application development cycle through the **Fixture Phase** and is now ready for **Phase 10 — Deployment**.
+TripLedger has completed all development, verification, security auditing, and production deployment phases. The system is fully operational in production.
 
-Current pre-deployment release candidate checkpoint: `55a89f2` (`TripLedger: integrate final landing page design`).
+### Deployed Production Endpoints
 
-### Development Phase Matrix
+| Resource | URL |
+|---|---|
+| **Production Application** | [https://trip-ledger.in](https://trip-ledger.in) |
+| **Vercel Frontend Host** | [https://tripledger-ten.vercel.app](https://tripledger-ten.vercel.app) |
+| **Render Backend API** | [https://tripledger-backend-svx0.onrender.com](https://tripledger-backend-svx0.onrender.com) |
+| **Backend Health Endpoint** | `https://tripledger-backend-svx0.onrender.com/api/health` |
+
+### Development & Deployment Roadmap
 
 | Phase | Scope / Description | Status |
 |---|---|---|
@@ -40,8 +49,11 @@ Current pre-deployment release candidate checkpoint: `55a89f2` (`TripLedger: int
 | **Phase 8** | Trip Closure & Final Settlement Snapshots (Persistence, confirmation stages) | **COMPLETE** |
 | **Phase 9** | Product Polish & Production Readiness (UI/UX, responsive hardening, 9.1–9.9.9) | **COMPLETE** |
 | **Phase 9.9.9** | Final QA & End-to-End System Validation | **COMPLETE** |
-| **Fixture Phase** | Independent Environment Validation & Stability Hardening | **COMPLETE** |
-| **Phase 10** | Production Deployment (`trip-ledger.in`) | **READY / NEXT** |
+| **Phase 10.1–10.7** | Production Preparation, Infrastructure, Hosting, SSL, CORS Setup | **COMPLETE** |
+| **Phase 10.8** | Production Database Verification (Schema, 8/8 migrations applied, index integrity) | **COMPLETE** |
+| **Phase 10.9** | Final Production Smoke Test | **COMPLETE** |
+| **Phase 10.10** | Security Review (IDOR, secret isolation, CORS, rate limiting, error responses) | **COMPLETE** |
+| **Phase 10.11** | Documentation Finalization | **COMPLETE** |
 
 ---
 
@@ -49,9 +61,9 @@ Current pre-deployment release candidate checkpoint: `55a89f2` (`TripLedger: int
 
 ### 1. Authentication & Account Management
 - **Email & Password Authentication**: Secure registration and login using bcrypt password hashing (cost factor 12) and JSON Web Tokens (JWT).
-- **Optional Google Sign-In**: Integration with Google Identity Services featuring server-side ID-token verification (`google-auth-library`).
+- **Google Sign-In**: Integration with Google Identity Services featuring server-side ID-token verification (`google-auth-library`). Authorized for the production domain `https://trip-ledger.in`.
 - **Profile Management**: Profile updates and user session retrieval via `/api/auth/me`.
-- **Fast-Fail Startup**: The server validates environment secrets on boot, preventing broken authentication states.
+- **Fast-Fail Startup**: Server startup validates required environment variables (`JWT_SECRET`, `DATABASE_URL`) before listening.
 
 ### 2. Trip Management & Joining
 - **Trip Creation**: Configure trip title, description, dates, budget type, and verification mode.
@@ -93,98 +105,80 @@ Current pre-deployment release candidate checkpoint: `55a89f2` (`TripLedger: int
 - **Snapshot Persistence**: Finalizing a settlement writes an immutable snapshot to `settlements` and `settlement_transactions`.
 - **API-Level Ledger Freeze**: Once closed, backend guards reject all mutation endpoints (`createExpense`, `updateExpense`, `approveExpense`, `rejectExpense`, `createApprovalRule`, `settlement-unit` changes) with `409 TRIP_ALREADY_CLOSED`.
 
-### 8. Production-Grade UI/UX & Standalone Landing Page
-- **Custom Design System**: Rich dark theme built with plain Vanilla CSS (`LandingPage.css`, `tokens.css`), custom typography (`Fraunces` and `IBM Plex Mono`), glassmorphism, and smooth animations.
-- **Responsive Layouts**: Tested and hardened across all breakpoints (320px, 375px, 480px, 768px, 1024px, 1280px, 1440px+).
-- **Integrated Landing Page**: Includes a hero section, Old Way vs. TripLedger Way comparison, interactive product showcase (Activity, Balances, Settlements, Exports), How It Works 7-step timeline, FAQ accordion, sticky translucent navigation, and CTA routing. Contains zero fabricated statistics or fake social proof.
+### 8. Production UI/UX & Integrated Landing Page
+- **Custom Design System**: Rich dark theme built with Vanilla CSS (`tokens.css`), typography (`Fraunces` and `IBM Plex Mono`), glassmorphism, and subtle micro-animations.
+- **Responsive Layouts**: Hardened across mobile, tablet, and desktop breakpoints (320px to 1440px+).
+- **Integrated Landing Page**: Includes hero section, Old Way vs. TripLedger Way comparison, interactive product showcase, 7-step timeline, FAQ accordion, translucent navigation, and authentication routing.
 
 ---
 
 ## Technology Stack
 
 ### Backend
-- **Runtime**: Node.js (v18+ recommended for native `--watch` and `node --test` runner)
+- **Runtime**: Node.js (v18.11+ for native `--watch` and `node --test` runner support)
 - **Framework**: Express.js
-- **Database**: PostgreSQL (v14+) with native `pg` client
-- **Database Migrations**: `node-pg-migrate`
+- **Database**: PostgreSQL (hosted on Supabase) via native `pg` pool client
+- **Database Migrations**: `node-pg-migrate` (8 applied migrations)
 - **Authentication**: `jsonwebtoken` (JWT), `bcrypt` (password hashing), `google-auth-library` (Google ID token verification)
 - **Validation**: Zod schema validation
-- **Security & Middleware**: Helmet (HTTP headers), CORS (origin restriction), `express-rate-limit` (auth rate limiting)
+- **Security & Middleware**: Helmet (HTTP headers), CORS (restricted origin), `express-rate-limit` (auth endpoint rate limiting)
+- **Hosting**: Render
 
 ### Frontend
 - **Framework**: React (v19.2.8)
 - **Build Tool**: Vite (v8.2.0)
 - **Routing**: React Router DOM (v7.18.2)
-- **HTTP Client**: Axios (v1.19.0)
+- **HTTP Client**: Axios (v1.19.0) with central response interceptors
 - **Animation & Graphics**: GSAP (v3.15.0), Three.js (v0.185.1)
-- **Styling**: Vanilla CSS (CSS custom properties/design tokens, no external UI library overhead)
-- **Icons & Assets**: Custom SVG & Base64 vector assets
+- **Styling**: Vanilla CSS (CSS custom properties, design tokens)
 - **Testing**: Vitest, React Testing Library
 - **Linting**: Oxlint
+- **Hosting**: Vercel
+- **Custom Domain**: `https://trip-ledger.in`
 
 ---
 
-## Project Architecture
+## Architecture & Data Flow
 
 ```
-TripLedger/
-├── backend/
-│   ├── src/
-│   │   ├── config/             # DB connection pool, environment verification
-│   │   ├── controllers/        # Express route handlers
-│   │   ├── middleware/         # Auth, error handling, rate limiting, trip validation
-│   │   ├── migrations/         # SQL migration scripts (node-pg-migrate)
-│   │   ├── repositories/       # Data access layer (PostgreSQL queries & transactions)
-│   │   ├── routes/             # API endpoint definitions
-│   │   ├── services/           # Business logic, algorithms, closure state machine
-│   │   ├── utils/              # JWT, password hashing, join code generator, AppError
-│   │   └── validators/         # Zod input validation schemas
-│   └── tests/                  # Unit and integration test suites
-├── frontend/
-│   ├── public/                 # Static assets & favicon
-│   ├── src/
-│   │   ├── api/                # HTTP API client modules
-│   │   ├── app/                # App root, React Router configuration
-│   │   ├── components/         # Modular UI components (auth, closure, dashboard, etc.)
-│   │   ├── content/            # Static content data
-│   │   ├── context/            # AuthContext & ToastContext
-│   │   ├── hooks/              # Custom React hooks (useAuth, useToast, useDocumentTitle)
-│   │   ├── pages/              # Application pages & LandingPage
-│   │   ├── styles/             # Global CSS tokens, cards, badges, skeletons
-│   │   └── test/               # Vitest setup
-│   └── vite.config.js
-└── README.md
-```
-
-### Data Flow Architecture
-
-```
-Client Request (React Frontend)
+Browser (https://trip-ledger.in)
        │
        ▼
+Vercel / React Frontend
+       │
+       ▼  (HTTPS REST API / JSON + JWT Authorization Header)
+Render / Express API Backend
+       │
+       ▼  (PostgreSQL Client Pool / Parameterized SQL Queries)
+Supabase PostgreSQL Database
+```
+
+> **Database Isolation Notice**: The Express backend is the sole application tier connecting to PostgreSQL. The React frontend contains zero database drivers, credentials, or direct DB connection strings.
+
+### Internal Application Architecture
+
+```
 Express Route Handler (/api/...)
        │
        ▼
-Zod Input Validation Middleware
+Zod Input Validation Middleware (validate.js)
        │
        ▼
-Authentication & Trip Membership Middleware
+Authentication & Trip Membership Middleware (requireAuth.js, requireTripMembership.js)
        │
        ▼
-Service Layer (Business Logic / State Machine)
+Service Layer (ExpenseService, SettlementService, ClosureService)
        │
        ▼
-Repository Layer (Parameterized SQL / PostgreSQL Transactions)
+Repository Layer (expenseRepository, tripRepository, PostgreSQL Transactions)
        │
        ▼
-PostgreSQL Database
+PostgreSQL Database (Supabase)
 ```
 
 ---
 
 ## Authentication Architecture
-
-TripLedger implements a dual-mode authentication architecture:
 
 ```
                   ┌────────────────────────┐
@@ -212,12 +206,11 @@ TripLedger implements a dual-mode authentication architecture:
 └─────────────────┘
 ```
 
-1. **Email & Password**: Passwords are hashed with bcrypt before storage. Login returns a signed JWT containing user ID and email.
-2. **Google OAuth 2.0**: The frontend uses Google Identity Services to obtain an ID token. The backend verifies the token directly against Google's public keys via `google-auth-library` before issuing a standard TripLedger JWT.
-3. **Client ID Environment Separation**:
+1. **Email & Password**: Passwords are hashed with bcrypt (`SALT_ROUNDS = 12`) before storage. Login returns a signed JWT containing minimal, non-sensitive payload (`sub: user.id`, `email`).
+2. **Google OAuth 2.0**: The frontend uses Google Identity Services to obtain an ID token. The backend verifies the token directly against Google public certificates using `google-auth-library` before issuing a standard TripLedger JWT.
+3. **Environment Isolation**:
    - `GOOGLE_CLIENT_ID` (backend) is used for server-side ID token verification.
-   - `VITE_GOOGLE_CLIENT_ID` (frontend) is bundled into the client build to initialize Google Sign-In.
-   - *Note*: OAuth client IDs are public identifiers. No client secrets are embedded in the frontend.
+   - `VITE_GOOGLE_CLIENT_ID` (frontend) is bundled into the client build for Google Identity Services initialization.
 
 ---
 
@@ -293,7 +286,8 @@ The settlement engine converts verified expense records into a balanced transact
    $$\sum_{i=1}^{N} \text{netBalance}_i = 0$$
    The sum of all net balances across all settlement units equals zero.
 2. **Exact Minor Unit Split**: When dividing expenses, remainder units are distributed deterministically, ensuring zero money is created or destroyed.
-3. **Snapshot Immutability**:
+3. **Transaction Reduction**: A greedy matching algorithm matches largest debtors to largest creditors, consolidating settlement transfers.
+4. **Snapshot Immutability**:
    - **Live Preview** (`GET /api/trips/:tripId/settlement`): Dynamically computed from currently verified expenses.
    - **Finalized Snapshot** (`POST /api/trips/:tripId/settlement/finalize`): Writes rows to `settlements` and `settlement_transactions`. Once written, the snapshot is permanent and unaffected by subsequent data changes.
 
@@ -313,7 +307,7 @@ Trip closure is a state-machine workflow protecting historical ledger integrity:
 3. **Stage 2 (`final_settlement`)**: Members review and confirm the finalized settlement. When the last active member confirms, the trip automatically transitions to `closed`.
 
 ### Closed-Trip API Protections
-Once status is `closed`, the following backend service calls are guarded and return `409 TRIP_ALREADY_CLOSED`:
+Once status is `closed`, backend guards reject mutation calls with `409 TRIP_ALREADY_CLOSED`:
 - `ExpenseService.createExpense`
 - `ExpenseService.updateExpense`
 - `ExpenseApprovalService.approveExpense`
@@ -321,26 +315,22 @@ Once status is `closed`, the following backend service calls are guarded and ret
 - `ExpenseApprovalService.createApprovalRule`
 - `TripService.updateMemberSettlementUnit`
 
+Reading endpoints (`GET` dashboard, history, notifications, expenses, settlement preview, final settlement) remain fully readable.
+
 ---
 
 ## Database Schema & Migrations
 
-Database schema management is handled by `node-pg-migrate`.
+Database schema management is handled by `node-pg-migrate`. All 8 project migrations are applied in production:
 
-### Key Tables
-- `users`: User credentials, hashed passwords, profile details.
-- `trips`: Trip settings, join codes, status (`active`, `closing`, `closed`), budget configuration.
-- `settlement_units`: Individual and group/family settlement units.
-- `trip_members`: User membership in trips and assignment to settlement units.
-- `expenses`: Expense records, minor-unit amounts, paid-by references, verification status.
-- `expense_participants`: Mapping of expenses to participating settlement units.
-- `approval_rules`: Tiered approval threshold rules.
-- `expense_approvals`: Decision audit logs (approvals/rejections/withdrawals).
-- `notifications`: User notification queue.
-- `history_events`: Trip activity audit stream.
-- `settlements`: Finalized settlement snapshots.
-- `settlement_transactions`: Finalized creditor/debtor transaction records.
-- `trip_closure_confirmations`: User stage confirmations (`expenses_complete`, `final_settlement`).
+1. `1700000000000_init-schema.sql` (Core tables: users, trips, trip_members, settlement_units, expenses, expense_participants)
+2. `1700000000100_add-notification-expense-link.sql` (Notification links)
+3. `1700000000200_add-phase8-settlement-closure-indexes.sql` (Settlement closure indexes)
+4. `1700000000300_rename-none-budget-type-to-unlimited.sql` (Budget type standardization)
+5. `1700000000400_ledger-freeze-and-settlement-audit.sql` (Closure audit tables & snapshot schema)
+6. `1700000000500_normalize-email-case.sql` (Case-insensitive email lookup index)
+7. `1700000000600_add-settlement-unit-archived-at.sql` (Settlement unit archiving)
+8. `1700000000700_add-settlement-transfer-requests.sql` (Group transfer requests)
 
 ---
 
@@ -348,47 +338,48 @@ Database schema management is handled by `node-pg-migrate`.
 
 ### Backend (`backend/.env`)
 
-| Variable | Required | Default | Description |
-|---|---|---|---|
-| `DATABASE_URL` | Yes | — | PostgreSQL connection string for development |
-| `TEST_DATABASE_URL` | For Tests | — | **Dedicated test database** connection string. Server refuses to run `NODE_ENV=test` without this. |
-| `JWT_SECRET` | Yes | — | Secret key for signing JWT tokens. Server fails fast if omitted. |
-| `GOOGLE_CLIENT_ID` | Optional | — | Google Cloud OAuth Client ID for verifying Google Sign-In tokens. |
-| `PORT` | No | `4000` | Port for the Express server. |
-| `CORS_ORIGIN` | No | `http://localhost:5173` | Allowed CORS origins (comma-separated for multiple origins). |
+| Variable | Scope | Description |
+|---|---|---|
+| `DATABASE_URL` | Server Secret | PostgreSQL connection string for production/development |
+| `TEST_DATABASE_URL` | Server Secret | Dedicated test database connection string used strictly during `npm test` |
+| `JWT_SECRET` | Server Secret | Secret key used to sign and verify JWT authentication tokens |
+| `GOOGLE_CLIENT_ID` | Server Config | Google OAuth Client ID for server-side ID token verification |
+| `PORT` | Server Config | Express server listening port (defaults to 4000) |
+| `CORS_ORIGIN` | Server Config | Allowed CORS origins (e.g. `https://trip-ledger.in`) |
+| `NODE_ENV` | Server Config | Environment flag (`production`, `development`, `test`) |
 
 ### Frontend (`frontend/.env`)
 
-| Variable | Required | Default | Description |
-|---|---|---|---|
-| `VITE_API_BASE_URL` | No | `http://localhost:4000/api` | Base URL for backend API requests. |
-| `VITE_GOOGLE_CLIENT_ID` | Optional | — | Client ID for Google Identity Services frontend button. |
+| Variable | Scope | Description |
+|---|---|---|
+| `VITE_API_BASE_URL` | Browser Public | Base API URL (e.g. `https://tripledger-backend-svx0.onrender.com/api`) |
+| `VITE_GOOGLE_CLIENT_ID` | Browser Public | Google OAuth Client ID for Google Identity Services button |
 
-> **Security Note**: Variables prefixed with `VITE_` are exposed to the browser build. Never place private secrets in `VITE_*` variables.
+> **Security Guard**: Only environment variables prefixed with `VITE_` are bundled into frontend client code. Server secrets (`DATABASE_URL`, `JWT_SECRET`) remain strictly server-side.
 
 ---
 
 ## Local Development Setup
 
 ### Prerequisites
-- **Node.js**: v18+ (or higher) and `npm`
+- **Node.js**: v18.11+ (or v20+) and `npm`
 - **PostgreSQL**: v14+ running locally
 
 ### Step-by-Step Setup
 
-1. **Navigate to the Repository Directory**:
+1. **Clone & Navigate**:
    ```bash
    cd TripLedger
    ```
 
-2. **Configure Environment Files**:
+2. **Configure Local Environment Files**:
    ```bash
    cp backend/.env.example backend/.env
    cp frontend/.env.example frontend/.env
    ```
-   *Edit `backend/.env` to supply your local PostgreSQL credentials and a JWT secret.*
+   *Supply local PostgreSQL credentials and a local JWT_SECRET in `backend/.env`.*
 
-3. **Initialize Development Database & Run Migrations**:
+3. **Initialize Database & Run Migrations**:
    ```bash
    createdb tripledger
    cd backend
@@ -396,14 +387,14 @@ Database schema management is handled by `node-pg-migrate`.
    npm run migrate:up
    ```
 
-4. **Start the Backend Server**:
+4. **Start Backend Server**:
    ```bash
    cd backend
    npm run dev
-   # Server runs at http://localhost:4000
+   # Server listens at http://localhost:4000
    ```
 
-5. **Start the Frontend Development Server**:
+5. **Start Frontend Client**:
    ```bash
    cd frontend
    npm install
@@ -411,7 +402,7 @@ Database schema management is handled by `node-pg-migrate`.
    # Client runs at http://localhost:5173
    ```
 
-6. **Verify System Health**:
+6. **Check Health Endpoint**:
    ```bash
    curl http://localhost:4000/api/health
    # Expected response: {"status":"ok","dbTime":"..."}
@@ -421,48 +412,57 @@ Database schema management is handled by `node-pg-migrate`.
 
 ## Testing & Quality Assurance
 
-TripLedger includes comprehensive, isolated test suites for both backend and frontend.
+TripLedger includes comprehensive test suites covering unit, integration, settlement, closure, and frontend component behaviors.
+
+### Verified Test Baseline
+
+- **Backend Test Suite**: **265 / 265 passing** (0 failures across node test runner suites)
+- **Frontend Test Suite**: **43 / 43 passing** (0 failures across Vitest files)
+- **Oxlint**: **0 errors** (3 informational warnings, 0 errors across 82 files)
+- **Production Build**: Vite client build succeeds cleanly
 
 ### Dedicated Test Database Isolation
-Backend integration tests require a **dedicated test database** to prevent data contamination:
+
+Backend tests run against a isolated test database:
 
 ```bash
 createdb tripledger_test
 export TEST_DATABASE_URL=postgresql://postgres:postgres@localhost:5432/tripledger_test
 cd backend
-npm run test:migrate   # Applies migrations to tripledger_test
-npm test               # Executes full test suite under NODE_ENV=test
+npm run test:migrate
+npm test
 ```
 
-### Verified Test Results
+---
 
-- **Backend Test Suite**: **265 / 265 passed** (0 failures across unit, integration, settlement, closure, and snapshot regression suites).
-- **Frontend Test Suite**: **43 / 43 passed** (0 failures across 7 test files in Vitest).
-- **Linter (`oxlint`)**: **0 errors** across 82 frontend files.
+## Security Architecture & Audit Status
+
+Phase 10.10 Security Review: **PASS**.
+
+Key security protections implemented in TripLedger:
+
+1. **Password Security**: Passwords hashed using `bcrypt` (salt rounds = 12).
+2. **Secret Isolation**: Zero secrets or credentials committed to source control; `.env` files explicitly ignored in `.gitignore`.
+3. **CORS Restrictions**: Production API restricts requests to allowed frontend origin (`https://trip-ledger.in`).
+4. **Auth Rate Limiting**: Authentication routes (`/register`, `/login`, `/google`) rate-limited to 20 requests per 15 minutes per IP.
+5. **Authorization & IDOR Protection**: All trip-scoped routes require active membership (`requireTripMembership`). Entity lookups check trip ownership and return non-leaking 404 responses for unauthorized requests.
+6. **Input Validation**: All incoming requests validated via Zod schemas; URL parameters format-checked.
+7. **SQL Injection Prevention**: All database access uses parameterized SQL queries via native `pg` pool.
+8. **Error Masking**: Production errors mask internal stack traces and database details behind generic `500 INTERNAL_ERROR` responses.
+9. **Security Headers**: Helmet middleware enabled for all HTTP responses.
 
 ---
 
-## Security Architecture
+## Production Infrastructure & URLs
 
-1. **Password Security**: Passwords hashed with bcrypt (salt rounds = 12). Passwords are never returned in API responses or written to log outputs.
-2. **JWT Fast-Fail Guard**: Server startup validates `JWT_SECRET` presence immediately.
-3. **CORS Restrictions**: Origin locking via `CORS_ORIGIN` middleware.
-4. **Auth Rate Limiting**: `/api/auth/register`, `/api/auth/login`, and `/api/auth/google` are rate-limited to 20 requests per 15 minutes per IP.
-5. **Security Headers**: Helmet middleware applied across all routes.
-6. **Information-Leakage Prevention**: Server errors log full tracebacks internally but return generic `{ "error": { "code": "INTERNAL_ERROR", "message": "Something went wrong" } }` responses to clients.
-7. **Database Isolation**: Application code refuses to run tests against `DATABASE_URL`.
-8. **Server-Side Authorization**: Closed-trip freezes and ownership permissions are enforced by backend service guards, independent of frontend state.
+TripLedger is deployed across the following production infrastructure:
 
----
-
-## Google OAuth Setup (Optional)
-
-Google Sign-In is completely optional; email/password authentication functions without it. To enable Google Sign-In:
-
-1. Create an OAuth 2.0 Client ID (Web Application) in the [Google Cloud Console](https://console.cloud.google.com/).
-2. Add `http://localhost:5173` to **Authorized JavaScript origins**.
-3. Set the Client ID in `backend/.env` (`GOOGLE_CLIENT_ID`) and `frontend/.env` (`VITE_GOOGLE_CLIENT_ID`).
-4. Restart both servers.
+- **Primary Application Domain**: [https://trip-ledger.in](https://trip-ledger.in)
+- **Frontend Hosting**: Vercel ([https://tripledger-ten.vercel.app](https://tripledger-ten.vercel.app))
+- **Backend API Hosting**: Render ([https://tripledger-backend-svx0.onrender.com](https://tripledger-backend-svx0.onrender.com))
+- **Database Hosting**: Supabase PostgreSQL
+- **Backend Health Check**: [https://tripledger-backend-svx0.onrender.com/api/health](https://tripledger-backend-svx0.onrender.com/api/health)
+- **Database Status**: 8/8 migrations applied, schema verified, live DB connectivity verified.
 
 ---
 
@@ -470,153 +470,43 @@ Google Sign-In is completely optional; email/password authentication functions w
 
 | Route Group | Base Path | Key Capabilities |
 |---|---|---|
-| **Authentication** | `/api/auth` | Register, Login, Google Sign-In, Get Session User (`/me`), Update Profile |
-| **Trips** | `/api/trips` | Create Trip, Join Trip, List My Trips, Get Trip Detail, Get Members |
-| **Settlement Units** | `/api/trips/:id/settlement-units` | Create Group Unit, Request/Approve Member Unit Transfer |
-| **Expenses** | `/api/trips/:id/expenses` | Create Expense, List Expenses, Get Detail, Edit Expense, Delete Expense |
-| **Approval Rules** | `/api/trips/:id/approval-rules` | Create Tiered Rule, List Approval Rules |
-| **Verification** | `/api/trips/:id/expenses/:expId/approvals` | Approve, Reject, Withdraw Approval, Get Approval History |
-| **Dashboard** | `/api/trips/:id/dashboard` | Get Summary Cards, Spending Totals, Pending Approvals |
-| **Notifications** | `/api/notifications` | List Notifications, Mark Single Read, Mark All Read |
-| **Activity History** | `/api/trips/:id/history` | Paginated Trip Event Log |
-| **Settlement** | `/api/trips/:id/settlement` | Live Settlement Preview, Finalize Settlement (`/finalize`), Get Final Snapshot (`/final`) |
+| **Authentication** | `/api/auth` | Register, Login, Google Sign-In, Session User (`/me`), Update Profile |
+| **Trips** | `/api/trips` | Create Trip, Join Trip, List Trips, Get Detail, List Members |
+| **Settlement Units** | `/api/trips/:id/settlement-units` | Create Group Unit, Request/Approve Transfer |
+| **Expenses** | `/api/trips/:id/expenses` | Create Expense, List Expenses, Get Detail, Update Expense |
+| **Approval Rules** | `/api/trips/:id/approval-rules` | Create Tiered Rule, List Rules |
+| **Verification** | `/api/trips/:id/expenses/:expId` | Approve (`/approve`), Reject (`/reject`), Verification History |
+| **Dashboard** | `/api/trips/:id/dashboard` | Summary Cards, Budget Status, Recent Expenses |
+| **Notifications** | `/api/notifications` | List Notifications, Unread Count, Mark Read (`/:id/read`), Mark All Read |
+| **Activity History** | `/api/trips/:id/history` | Paginated Event Audit Log |
+| **Settlement** | `/api/trips/:id/settlement` | Live Preview, Finalize Settlement (`/finalize`), Get Final Snapshot (`/final`) |
 | **Trip Closure** | `/api/trips/:id/closure` | Get Closure Status, Confirm Stage (`/confirmations`) |
 
 ---
 
-## Phase 10 — Deployment Plan
-
-Phase 10 is the next stage in the TripLedger development roadmap.
-
-**Production Domain Context**: `trip-ledger.in`
-
-### Deployment Roadmap Sequence
-
-```
-10.1 Production Preparation (Configuration review, environment setup)
-   │
-   ▼
-10.2 Production PostgreSQL (Provision managed database instance)
-   │
-   ▼
-10.3 Backend Deployment (Deploy Node/Express service)
-   │
-   ▼
-10.4 Frontend Deployment (Build & host static Vite assets)
-   │
-   ▼
-10.5 Domain Setup (Connect trip-ledger.in DNS records)
-   │
-   ▼
-10.6 HTTPS / SSL (Configure TLS certificates)
-   │
-   ▼
-10.7 CORS Policy (Lock production origins)
-   │
-   ▼
-10.8 Production Database Migration (Run migrate:up against production DB)
-   │
-   ▼
-10.9 Production Smoke Test (Execute end-to-end user workflow)
-   │
-   ▼
-10.10 Security Sanity Verification (Audit environment secrets & headers)
-   │
-   ▼
-10.11 Deployment Documentation Finalization
-```
-
-### Phase 10 Deployment Checklist
-
-- [ ] Provision production PostgreSQL instance
-- [ ] Configure production `DATABASE_URL`
-- [ ] Generate secure production `JWT_SECRET`
-- [ ] Execute `npm run migrate:up` on production database
-- [ ] Deploy backend API service
-- [ ] Configure `CORS_ORIGIN` to `https://trip-ledger.in`
-- [ ] Set `VITE_API_BASE_URL` to production backend API URL
-- [ ] Build frontend production bundle (`npm run build`)
-- [ ] Deploy frontend static assets to hosting provider
-- [ ] Configure `trip-ledger.in` DNS A/AAAA/CNAME records
-- [ ] Provision SSL/TLS certificates for HTTPS
-- [ ] Configure Google OAuth Production Authorized Origins & Client ID
-- [ ] Perform End-to-End Production Smoke Test
-- [ ] Finalize production operational documentation
-
-### Production Smoke Test Workflow
-
-1. Register new user account on `trip-ledger.in`
-2. Log in and verify JWT session
-3. Test Google Sign-In authentication
-4. Create a new trip
-5. Join trip from a second user account using 7-character join code
-6. Log an expense with participant allocation
-7. Process expense verification / approval
-8. Verify Dashboard card updates and notification delivery
-9. Inspect Live Settlement preview
-10. Finalize settlement snapshot
-11. Confirm closure stages (`expenses_complete` $\rightarrow$ `final_settlement`)
-12. Verify trip transitions to `closed` and API enforces read-only freeze
-
----
-
-## Troubleshooting
+## Troubleshooting & Technical Notes
 
 - **`npm test` fails with "TEST_DATABASE_URL is not set"**:
-  Expected protection behavior. Create `tripledger_test` and export `TEST_DATABASE_URL` before running tests.
-- **Backend exits with "Missing required environment variable(s)"**:
-  `backend/.env` is missing `JWT_SECRET` or `DATABASE_URL`. Copy `backend/.env.example` and supply valid values.
+  Expected security behavior. Create `tripledger_test` and export `TEST_DATABASE_URL` before running tests.
+- **Backend exits on startup with "Missing required environment variable(s)"**:
+  `backend/.env` is missing `JWT_SECRET` or `DATABASE_URL`. Copy `backend/.env.example` and fill in valid values.
 - **CORS error in browser console**:
-  Ensure `CORS_ORIGIN` in `backend/.env` includes the exact scheme, domain, and port of the frontend client.
+  Verify `CORS_ORIGIN` in `backend/.env` matches the exact frontend origin (`https://trip-ledger.in`).
 - **Google Sign-In button missing**:
-  `VITE_GOOGLE_CLIENT_ID` is omitted in `frontend/.env`. Email/password authentication remains fully functional.
-- **`404` joining a trip via join code**:
-  Join codes are case-insensitive. Verify the code exists and that the user is not already a member of the trip.
+  `VITE_GOOGLE_CLIENT_ID` is omitted in `frontend/.env`. Email/password authentication remains fully operational.
+- **Join code lookup returns 404**:
+  Join codes are 7 characters and matched case-insensitively. Verify the code exists and that the user is not already a member.
 
 ---
 
-## Technical Design Notes
+## Final Project Status
 
-### Finalized Settlement Snapshots (Phase 8 & 9.7 Architecture)
+**TripLedger is complete, verified, security-audited, and operational in production.**
 
-To ensure historical integrity, TripLedger separates live previews from finalized settlements:
-
-- **Live Preview** (`GET /api/trips/:tripId/settlement`): Computes balances dynamically from currently verified expenses.
-- **Finalized Snapshot** (`POST /api/trips/:tripId/settlement/finalize`): Evaluates current fair shares and writes rows to `settlements` and `settlement_transactions`.
-- **Idempotency**: Calling `/finalize` repeatedly returns the existing snapshot (`alreadyFinalized: true`) rather than recomputing or creating duplicate database rows.
-- **Snapshot Integrity**: Once finalized, changes to live trip data do not alter the snapshot.
-
-### Two-Stage Closure State Machine
-
-The trip closure workflow guarantees all members agree before a trip is locked:
-
-```
-State: active
-  │
-  ├─► Member confirms expenses_complete
-  │     └─► Status transitions to "closing"
-  │
-State: closing
-  │
-  ├─► Owner/Admin finalizes settlement snapshot
-  │     └─► Settlement snapshot persisted to DB
-  │
-  ├─► All active members confirm final_settlement
-  │     └─► Status automatically transitions to "closed"
-  │
-State: closed
-  │
-  └─► Ledger frozen; API mutation guards active (409 TRIP_ALREADY_CLOSED)
-```
-
-### Closed-Trip Mutation Guards
-
-Backend services explicitly check `trip.status` before executing data mutations:
-- `ExpenseService.createExpense` $\rightarrow$ `409 TRIP_ALREADY_CLOSED`
-- `ExpenseService.updateExpense` $\rightarrow$ `409 TRIP_ALREADY_CLOSED`
-- `ExpenseApprovalService.approveExpense` $\rightarrow$ `409 TRIP_ALREADY_CLOSED`
-- `ExpenseApprovalService.rejectExpense` $\rightarrow$ `409 TRIP_ALREADY_CLOSED`
-- `ExpenseApprovalService.createApprovalRule` $\rightarrow$ `409 TRIP_ALREADY_CLOSED`
-- `TripService.updateMemberSettlementUnit` $\rightarrow$ `409 TRIP_ALREADY_CLOSED`
-
-Reading endpoints (`GET` dashboard, history, notifications, expenses, settlement preview, final settlement) remain available for closed trips.
+- **Application Development**: Complete (Phases 1 through 9.9.9)
+- **Production Infrastructure**: Complete (Vercel + Render + Supabase)
+- **Custom Domain**: Active (`https://trip-ledger.in`)
+- **Database State**: 8/8 migrations applied & verified
+- **Test Baseline**: 265/265 backend tests, 43/43 frontend tests passing
+- **Security Audit**: Phase 10.10 PASS
+- **Documentation**: Finalized
