@@ -114,16 +114,14 @@ export function GoogleSignInButton({ onSuccess, onError, disabled = false }) {
         const container = buttonRef.current.parentElement || buttonRef.current;
 
         const doRender = () => {
-          if (!buttonRef.current || cancelled) return;
-          const currentWidth = container
-            ? Math.round(container.getBoundingClientRect().width)
-            : 0;
+          if (!buttonRef.current || !container || cancelled) return;
+          const containerWidth = container.getBoundingClientRect().width;
+          if (containerWidth <= 0) return;
 
-          if (Math.abs(currentWidth - lastWidth) < 2 && lastWidth > 0) return;
-          lastWidth = currentWidth;
+          const width = Math.min(Math.round(containerWidth), 400);
 
-          const targetWidth =
-            currentWidth >= 200 ? Math.min(currentWidth, 400) : undefined;
+          if (Math.abs(width - lastWidth) < 2 && lastWidth > 0) return;
+          lastWidth = width;
 
           buttonRef.current.innerHTML = '';
           google.accounts.id.renderButton(buttonRef.current, {
@@ -131,7 +129,7 @@ export function GoogleSignInButton({ onSuccess, onError, disabled = false }) {
             theme: 'outline',
             size: 'large',
             shape: 'rectangular',
-            width: targetWidth,
+            width,
             text: 'continue_with',
             logo_alignment: 'left',
           });
